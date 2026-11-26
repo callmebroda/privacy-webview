@@ -64,7 +64,6 @@ ungoogled-chromium-android/Disable-offline-indicator.patch
 Bromite/Remove-account-permissions-from-manifest.patch
 Bromite/updater-disable-updater-pings.patch
 #Bromite/Inject-scripts-for-AMP-tracking-ads-and-video.patch
-Cromite/Add-exit-menu-item.patch
 #Bromite/Add-bookmark-import-export-actions.patch
 Cromite/Add-option-to-not-persist-tabs-across-sessions.patch
 Cromite/Add-a-proxy-configuration-page.patch
@@ -73,7 +72,6 @@ Bromite/DoH-secure-mode-by-default.patch
 Bromite/Revert-flags-remove-disable-pull-to-refresh-effect.patch
 Bromite/Disable-DRM-media-origin-IDs-preprovisioning.patch
 Bromite/Add-an-always-incognito-mode.patch
-Cromite/Add-bookmark-import-export-actions.patch
 src-fix/fix-android-extra-locales-cy-154.patch
 src-fix/fix-gms-dangling-deps-154.patch
 src-fix/fix-android-download-obfuscation-154.patch

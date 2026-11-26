@@ -2,7 +2,7 @@ author: bearinmindcat <bearincrypto@gmail.com>
 
 --- a/components/enterprise/connectors/core/cloud_content_scanning/cloud_binary_upload_service_base.cc
 +++ b/components/enterprise/connectors/core/cloud_content_scanning/cloud_binary_upload_service_base.cc
-@@ -370,31 +370,6 @@ void CloudBinaryUploadServiceBase::LogRe
+@@ -384,33 +384,6 @@
      const ContentAnalysisResponse& response,
      int http_status,
      const std::string& response_data) {
@@ -28,8 +28,10 @@ author: bearinmindcat <bearincrypto@gmail.com>
 -                               : std::string_view(response_data)
 -                                     .substr(0, kMaxResponseDataLength)});
 -  }
+-  BinaryUploadRequest::Id request_id = request->id();
 -  safe_browsing::WebUIContentInfoSingleton::GetInstance()
--      ->AddToDeepScanResponses(active_tokens_[request->id()], status, response);
+-      ->AddToDeepScanResponses(active_requests_[request_id].token, status,
+-                               response);
 -#endif
  }
  

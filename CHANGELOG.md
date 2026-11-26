@@ -1,4 +1,15 @@
 # 158.0.8127.88-1 (experimental, private fork)
+* Run #6 (760669b) applied 69/73 and reported 4 real conflicts; fixed:
+  - `src-fix/fix-safebrowsing-cloud-binary-upload-deepscan.patch` rebuilt: the removed
+    `#if !BUILDFLAG(IS_IOS)` block now ends with `active_requests_[request_id].token`
+    instead of `active_tokens_[request->id()]` in 158.
+  - `ungoogled-chromium-android/Change-package-name-chromium.patch` rebuilt: the GN guard
+    is now `if (use_stable_package_name)` (was `use_stable_package_name_for_trichrome`).
+  - `Cromite/Add-exit-menu-item.patch` and `Cromite/Add-bookmark-import-export-actions.patch`
+    moved to `patches/series.browser`: both add Chrome browser menu items, nothing that is
+    compiled into `system_webview_apk`.
+* Verified locally against the CI tree state (upstream 158 patch set + domain substitution +
+  the other 69 patches): both rebuilt patches apply with `git apply --check`.
 * Fix the patch loop: `patch -i` must be an absolute path because GNU patch chdir()s into
   `-d src` first, so `-i patches/x.patch` resolved to `src/patches/x.patch` and **all 92
   patches reported as failed** in run #4. The loop now passes `${PWD}/patches/...` and

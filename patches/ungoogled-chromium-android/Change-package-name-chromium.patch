@@ -2,22 +2,18 @@ description: change package name to allow co-existence with original Chromium
 author: Wengling Chen <feiyu2817@gmail.com>
 
 ---
- chrome/android/chrome_public_apk_tmpl.gni                          |    4 ++--
- chrome/android/java/res_chromium_base/values/channel_constants.xml |    2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
 --- a/chrome/android/chrome_public_apk_tmpl.gni
 +++ b/chrome/android/chrome_public_apk_tmpl.gni
-@@ -26,7 +26,7 @@ declare_args() {
+@@ -26,7 +26,7 @@
    # Android package name to use when compiling the public chrome targets
    # (chrome_public_apk, trichrome_chrome_bundle, etc. as well as the
    # *_bundle variants). This defaults to the Chromium browser package name.
 -  chrome_public_manifest_package = "org.chromium.chrome"
 +  chrome_public_manifest_package = "org.ungoogled.chromium"
-   if (use_stable_package_name_for_trichrome) {
+   if (use_stable_package_name) {
      chrome_public_manifest_package += ".stable"
    } else if (android_channel != "default") {
-@@ -34,7 +34,7 @@ declare_args() {
+@@ -34,7 +34,7 @@
    }
  }
  
@@ -28,7 +24,7 @@ author: Wengling Chen <feiyu2817@gmail.com>
    "channel=$android_channel",
 --- a/chrome/android/java/res_chromium_base/values/channel_constants.xml
 +++ b/chrome/android/java/res_chromium_base/values/channel_constants.xml
-@@ -7,7 +7,7 @@ found in the LICENSE file.
+@@ -7,7 +7,7 @@
  
  <resources xmlns:android="http://schemas.android.com/apk/res/android">
      <!-- The application name displayed to the user. -->
