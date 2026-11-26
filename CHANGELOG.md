@@ -1,4 +1,10 @@
 # 158.0.8127.88-1 (experimental, private fork)
+* Fix the runner's poisoned npm config: the image points npm at
+  `airlock-proxy.uplink.goog:999` (resolves to 127.0.0.1, refuses connections), so
+  Chromium's `packages.json` hook phase died with ECONNREFUSED. hosted-prepare.sh now
+  pins `registry.npmjs.org`, strips the poisoned keys from the image's global npmrc and
+  probes the tarball before the 40-minute fetch; hosted-build.sh clears the npm proxy
+  env vars for the build process.
 * Chromium bumped 156.0.8078.79 -> 158.0.8127.88. Patch series NOT yet validated at this milestone.
 * Build the WebView only (`webview_target` / `system_webview_apk`); the browser target is no longer built.
 * Added `build/release-webview.sh` for WebView-only signing and asset assembly.
