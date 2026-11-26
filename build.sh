@@ -317,17 +317,22 @@ if [ "$RESUME" != y ]; then
   _failed_list=""
   _failed_count=0
   _applied=0
+  _plog="$(mktemp)"
   while IFS= read -r _p || [ -n "${_p}" ]; do
       case "${_p}" in ''|'#'*) continue ;; esac
+      # NOTE: -i must be absolute. GNU patch chdir()s into -d first, so a relative
+      # -i resolves against src/ and every patch "disappears".
       if patch -p1 --ignore-whitespace --forward --no-backup-if-mismatch \
-                -i "patches/${_p}" -d src >/dev/null 2>&1; then
+                -i "${PWD}/patches/${_p}" -d src >"${_plog}" 2>&1; then
           _applied=$((_applied + 1))
       else
           echo "PATCH FAILED: ${_p}"
+          grep -m3 -E "FAILED|Hunk|can't find|No such file|does not exist" "${_plog}" | sed 's/^/    /' || true
           _failed_list="${_failed_list}${_p}"$'\n'
           _failed_count=$((_failed_count + 1))
       fi
   done < patches/series
+  rm -f "${_plog}"
   echo "patches applied: ${_applied}, failed: ${_failed_count}"
   if [ "${_failed_count}" -ne 0 ]; then
       echo "=============================================================="

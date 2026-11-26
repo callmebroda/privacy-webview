@@ -1,4 +1,10 @@
 # 158.0.8127.88-1 (experimental, private fork)
+* Fix the patch loop: `patch -i` must be an absolute path because GNU patch chdir()s into
+  `-d src` first, so `-i patches/x.patch` resolved to `src/patches/x.patch` and **all 92
+  patches reported as failed** in run #4. The loop now passes `${PWD}/patches/...` and
+  prints the first error lines for any patch that still fails.
+* Build arm64 only by default: tag-triggered runs no longer expand to `["arm64","arm"]`,
+  and the manual `architecture` input now defaults to `arm64`.
 * Patch series curated for a WebView-only build: 19 browser-only patches (Play Services /
   Firebase dependency removals, chrome://flags additions, extension UI) moved to
   `patches/series.browser` — they target chrome/android, media_router, app_rating,

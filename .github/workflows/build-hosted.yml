@@ -8,7 +8,7 @@ on:
       architecture:
         description: 'architecture'
         required: true
-        default: 'all'
+        default: 'arm64'
         type: choice
         options: [all, arm64, arm]
       chromium_source:
@@ -42,7 +42,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        architecture: ${{ (github.event_name == 'push' || inputs.architecture == 'all') && fromJSON('["arm64","arm"]') || fromJSON(format('["{0}"]', inputs.architecture)) }}
+        # Tag pushes (the CI trigger that does not need Actions write) build arm64
+        # only. A manual run can still ask for arm, or for both with 'all'.
+        architecture: ${{ fromJSON(github.event_name == 'push' && '["arm64"]' || (inputs.architecture == 'all' && '["arm64","arm"]' || format('["{0}"]', inputs.architecture))) }}
     permissions:
       contents: read
       actions: read
