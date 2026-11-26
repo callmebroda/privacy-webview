@@ -157,6 +157,27 @@ function prepare_repos {
   git config --global http.lowSpeedTime 900
   [ $_sync_rc -eq 0 ] || return $_sync_rc
 
+  # Chromium's published package-lock.json for third_party/node still ships "resolved"
+  # URLs pointing at Google's internal package mirror
+  # (http://airlock-proxy.uplink.goog:999/npm/artifact-foundry-prod/ah-3p-staging-npm/).
+  # npm install honours lockfile URLs and ignores the configured registry, so on GitHub's
+  # runners it dies with ECONNREFUSED 127.0.0.1:999 no matter what npm config says.
+  # Rewrite those URLs to the public registry before the install runs.
+  _poison='http://airlock-proxy.uplink.goog:999/npm/artifact-foundry-prod/ah-3p-staging-npm/'
+  _locks=$(grep -rlF "${_poison}" src --include='*.json' 2>/dev/null || true)
+  if [ -n "${_locks}" ]; then
+    echo "Rewriting internal registry URLs in:"
+    printf '  %s\n' ${_locks}
+    _count=$(grep -oF "${_poison}" ${_locks} | wc -l)
+    # shellcheck disable=SC2086
+    sed -i "s|${_poison}|https://registry.npmjs.org/|g" ${_locks}
+    echo "  rewrote ${_count} URLs to registry.npmjs.org"
+  fi
+  if grep -rqF "${_poison}" src --include='*.json' 2>/dev/null; then
+    echo "FATAL: internal registry URLs still present under src/"
+    return 1
+  fi
+
   ( src/third_party/node/update_npm_deps ) || return $?
   _rollup_pkg="src/third_party/devtools-frontend/src/node_modules/rollup/package.json"
   if [ -f "${_rollup_pkg}" ]; then
@@ -228,7 +249,16 @@ if [ "$RESUME" = y ]; then
         "$(find src/out/Default -name '*.o' 2>/dev/null | wc -l)" >> "$stamp_file"
 else
     # Run preparation
-    for i in $(seq 1 10); do prepare_repos && s=0 && break || s=$? && reverse_change && sleep 120; done; (exit $s)
+    s=0
+    for i in 1 2 3; do
+        echo "=== preparation attempt ${i}/3 at $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
+        if prepare_repos; then s=0; break; else s=$?; reverse_change; fi
+        if [ "${i}" -lt 3 ]; then
+            echo "attempt ${i} failed (rc=${s}); retrying in 120s"
+            sleep 120
+        fi
+    done
+    (exit "$s")
 fi
 
 if [ "$INSTALL_DEPS" = y ]; then

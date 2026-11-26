@@ -1,4 +1,13 @@
 # 158.0.8127.88-1 (experimental, private fork)
+* Fix the real cause of the npm ECONNREFUSED loop: Chromium's own
+  `third_party/node/package-lock.json` at this tag ships **150 `resolved` URLs pointing at
+  Google's internal mirror** (`http://airlock-proxy.uplink.goog:999/npm/artifact-foundry-prod/ah-3p-staging-npm/`).
+  `npm install` honours lockfile URLs and ignores the configured registry, so pinning the
+  registry was not enough. `build.sh` now rewrites those URLs to `registry.npmjs.org`
+  before the hook phase and fails loudly if any survive. Verified locally: the real
+  `npm install` now completes and installs `write-file-atomic@7.0.1`.
+* Bound the preparation retry loop to 3 attempts with a visible `attempt N/3` banner
+  instead of 10 silent retries that each re-clone the source.
 * Fix the runner's poisoned npm config: the image points npm at
   `airlock-proxy.uplink.goog:999` (resolves to 127.0.0.1, refuses connections), so
   Chromium's `packages.json` hook phase died with ECONNREFUSED. hosted-prepare.sh now
