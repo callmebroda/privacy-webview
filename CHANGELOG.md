@@ -1,4 +1,15 @@
 # 158.0.8127.88-1 (experimental, private fork)
+* Patch series curated for a WebView-only build: 19 browser-only patches (Play Services /
+  Firebase dependency removals, chrome://flags additions, extension UI) moved to
+  `patches/series.browser` — they target chrome/android, media_router, app_rating,
+  module_installer and the extensions UI, none of which is compiled into
+  `system_webview_apk`, and at 158 several no longer apply because Google merged
+  `third_party/android_deps/autorolled/BUILD.gn` into `third_party/android_deps/BUILD.gn`.
+  Skipping a removal patch is build-safe: the code it deletes stays as upstream ships it.
+* `Vanadium/0024-disable-showing-popular-sites-by-default.patch` regenerated against the
+  158 `components/ntp_tiles/features.cc` (hunk context had drifted).
+* Verified locally: all 73 remaining patches apply cleanly to the files they touch at
+  tag 158.0.8127.88 (harness: real files fetched from the tag, fuzz 2).
 * Fix the pruning.list conflict: `patches/Other/ungoogled-main-repo-fix.patch` removed three
   `third_party/**/r8/*.jar` lines using line numbers from an older upstream tree, so hunk #1
   failed at line 2138. Hunks regenerated against `ungoogled-chromium` tag 158.0.8127.88-1

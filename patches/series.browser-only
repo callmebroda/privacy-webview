@@ -1,0 +1,35 @@
+# Browser-only patches, NOT applied by this fork's WebView build.
+#
+# This fork builds only system_webview_apk. The patches below target the Chrome
+# browser targets (chrome/android, media_router, app_rating, module_installer,
+# extensions UI, chrome://flags entries) or remove Play Services/Firebase deps
+# from those browser targets. They are not compiled into the WebView APK, and at
+# Chromium 158 several of them no longer apply because Google moved
+# third_party/android_deps/autorolled/BUILD.gn into third_party/android_deps/BUILD.gn.
+#
+# Skipping a *removal* patch is build-safe: the code it would delete simply stays
+# as upstream ships it. The privacy patches that matter for the WebView
+# (ungoogled core, Vanadium, Bromite/Cromite, Unobtainium) all remain active in
+# patches/series.
+#
+# To restore the browser build, merge these back into patches/series and rebase
+# them onto the current Chromium tag.
+src-fix/fix-held-gms-dangling-deps.patch
+ungoogled-chromium-android/Remove-dependency-on-com.google.android.gms.gcm.patch
+ungoogled-chromium-android/Remove-dependency-on-firebase.patch
+ungoogled-chromium-android/Remove-dependency-on-com.google.android.gms.auth.patch
+ungoogled-chromium-android/Remove-dependency-on-com.google.android.gms.cast.patch
+ungoogled-chromium-android/Remove-dependency-on-com.google.android.gms.fido-com.google.android.gms.iid-com.google.android.gms.instantapps-com.google.android.gms.location.patch
+ungoogled-chromium-android/Remove-dependency-on-com.google.android.gms.vision-com.google.android.gms.clearcut-com.google.android.gms.phenotype.patch
+ungoogled-chromium-android/Remove-dependency-on-com.google.android.gms.flags-com.google.android.gms.location.places-com.google.android.gms.stats.patch
+ungoogled-chromium-android/Remove-dependency-on-com.google.android.gms.common-auth-signin-dynamic-com.google.android.gms.tasks.patch
+ungoogled-chromium-android/Remove-dependency-on-com.google.android.play.patch
+ungoogled-chromium-android/Remove-dependency-on-com.google.android.play.core.splitcompat-com.google.android.play.core.splitinstall.patch
+ungoogled-chromium-android/Add-save-data-flag.patch
+ungoogled-chromium-android/Add-disable-peerconnection-flag.patch
+ungoogled-chromium-android/Add-clear-data-on-exit-flag.patch
+src-fix/fix-gms-dangling-deps-155.patch
+Extensions/android-extensions-support.patch
+Extensions/Ultimatum/load-crx.patch
+Extensions/misc/extensions-menu-null-guard.patch
+Own/enable-extensions-by-default.patch

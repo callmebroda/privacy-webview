@@ -79,3 +79,38 @@ secure. If you did not create this fork, you almost certainly want upstream's of
 Inherited from upstream — see [LICENSE.md](LICENSE.md). Upstream credits and patch
 authorship (ungoogled-chromium, Vanadium/GrapheneOS, Bromite, Cromite, Unobtainium,
 DivestOS) are unchanged.
+
+## Why the patch series is curated (and what was dropped)
+
+`patches/series` holds the patches this build actually applies. `patches/series.browser`
+holds 19 browser-only patches that are **not** applied: Play Services / Firebase dependency
+removals, `chrome://flags` additions and the extensions UI. They patch `chrome/android`,
+`components/media_router`, `components/module_installer`, `chrome/browser/ui/android/...`
+and the extensions stack — none of which is linked into `system_webview_apk`.
+
+Two reasons they are out:
+
+1. At Chromium 158 Google merged `third_party/android_deps/autorolled/BUILD.gn` into
+   `third_party/android_deps/BUILD.gn`, so every hunk that referenced the old path fails.
+   Rebasing them is real work for code this build never compiles.
+2. Skipping a *removal* patch cannot break a build — the code it would delete simply stays
+   as upstream ships it. The privacy patches that matter for the WebView (ungoogled core,
+   Vanadium, Bromite/Cromite, Unobtainium) are all still applied.
+
+The trade-off is honest: with those patches dropped, Play Services references that live in
+shared code (`content/`, `services/`) are left in place. WebView does not link Play Services,
+so this does not change what the APK can do, but it is less de-Googled than upstream's full
+browser build. Restore them (and rebase to the current tag) if you ever build the browser.
+
+## Reference: how holtdroid builds the same Chromium version
+
+Worth knowing, because it explains two choices here:
+
+* holtdroid runs `gclient sync --nohooks` and then **`gclient runhooks`**, which downloads
+  Chromium's prebuilt `node_modules` from Google Storage. This fork instead runs
+  `third_party/node/update_npm_deps` (an npm install) because ungoogled's flow needs the
+  npm tree before it applies its patches — which is why the poisoned `package-lock.json`
+  URLs had to be rewritten in `build.sh`.
+* holtdroid builds with `is_official_build = false`, `symbol_level = 0`, no LTO. This fork
+  keeps ungoogled's `android_flags.release.gn` (`is_official_build = true`), which enables
+  ThinLTO and is the main risk for the 16 GB GitHub runners during the link stage.
