@@ -22,6 +22,43 @@
 >
 > Read [EXPERIMENTAL.md](EXPERIMENTAL.md) before building or installing anything from here.
 
+## About this fork (`callmebroda/privacy-webview`)
+
+This fork exists for one narrow purpose: a **privacy-focused Android System WebView at a
+Chromium version newer than upstream ships**, for private use on an Android 11 (API 30)
+device.
+
+* **What it produces:** `SystemWebView_<arch>.apk` only — the browser target is not built.
+* **Version:** Chromium **158.0.8127.88**, bumped from upstream's 156.0.8078.79.
+* **What is inside:** the ungoogled-chromium core patches, **32 Vanadium patches**
+  (field trials and variations disabled, WebView variations support off, metrics off by
+  default, strict site isolation, Play-services fonts off, autofill server communication
+  off, background sync off, sensors access off, stack protection), Bromite/Cromite
+  hardening (DoH secure mode by default, DRM origin-ID preprovisioning off, updater pings
+  off, account permissions removed) and the Unobtainium kills (Location fallback, Vision,
+  Translate). The authoritative list is `patches/series`.
+* **Status:** experimental. The patch series was last validated at 156, so the first build
+  run is expected to fail on patch conflicts in the `prep` job. An APK from here is
+  untested until you test it.
+* **Signing:** no release keystore is configured, so output is **debug-signed** unless you
+  add `KEYSTORE_B64` / `KEYSTORE_PASS` secrets. Debug-signed APKs must not be distributed.
+* **Installing it needs root:** the package is `org.ungoogled.chromium.webview`, which
+  Android only accepts as a WebView provider if the package and its certificate digest are
+  whitelisted in `config_webview_packages.xml` (a Magisk/KernelSU overlay), then selected
+  under *Developer options → WebView implementation*. Keep a rollback path — a broken
+  provider takes every WebView-backed app down with it.
+
+### Building it here
+
+Actions → **release build** → *Run workflow*: `architecture` = `arm64` (or `arm`),
+`chromium_source` = `github`, `release_name` = **blank** (the publish job refuses
+unsigned APKs), `source_run_id` = blank, `threads` = `0`. The APK lands as the
+`release-<arch>` artifact.
+
+**Not supported, not official.** No warranty, no issue triage, and please do not report
+problems with this fork to the upstream project — the upstream README, credits and
+licence below apply unchanged.
+
 Please see [CHANGELOG](CHANGELOG.md) for latest updates.
 
 *A lightweight approach to removing Google web service dependency*
