@@ -16,18 +16,17 @@ index 8394b02..40909d5 100644
  google_default_client_id=""
  google_default_client_secret=""
 diff --git a/ungoogled-chromium/pruning.list b/ungoogled-chromium/pruning.list
-index 11776ef..7cb8cad 100644
 --- a/ungoogled-chromium/pruning.list
 +++ b/ungoogled-chromium/pruning.list
-@@ -2138,7 +2138,6 @@ third_party/angle/third_party/glmark2/src/data/models/asteroid-low.3ds
- third_party/angle/third_party/glmark2/src/data/models/cat.3ds
- third_party/angle/third_party/glmark2/src/data/models/cube.3ds
- third_party/angle/third_party/glmark2/src/data/models/horse.3ds
+@@ -2094,7 +2094,6 @@
+ third_party/angle/src/tests/capture_tests/expected/CapturedTest_MultiFrame_ES3_Vulkan.angledata
+ third_party/angle/third_party/clspv/gn/clspv--.bc
+ third_party/angle/third_party/clspv/gn/clspv64--.bc
 -third_party/angle/third_party/r8/custom_d8.jar
  third_party/aria-practices/src/content/patterns/slider/examples/images/max-arrow.paint
  third_party/blink/renderer/bindings/core/v8/serialization/fuzz_corpus/blink-0bb59816-x86
  third_party/blink/renderer/bindings/core/v8/serialization/fuzz_corpus/blink-10205257-x86
-@@ -12463,8 +12462,6 @@ third_party/pyelftools/test/testfiles_for_unittests/simple_gcc.elf.arm
+@@ -10299,8 +10298,6 @@
  third_party/pywebsocket3/src/test/cert/client_cert.p12
  third_party/quic_trace/src/examples/example.json.gz
  third_party/quic_trace/src/examples/example.qtr

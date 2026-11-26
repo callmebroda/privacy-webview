@@ -1,4 +1,11 @@
 # 158.0.8127.88-1 (experimental, private fork)
+* Fix the pruning.list conflict: `patches/Other/ungoogled-main-repo-fix.patch` removed three
+  `third_party/**/r8/*.jar` lines using line numbers from an older upstream tree, so hunk #1
+  failed at line 2138. Hunks regenerated against `ungoogled-chromium` tag 158.0.8127.88-1
+  (the lines now sit at 2097 and 10302) and verified to apply cleanly.
+* Patch failures no longer trigger the 3x preparation retry: they exit 42 immediately.
+* The patch series is applied one patch at a time and every conflict is reported in a single
+  run, instead of stopping at the first one and costing another 45-minute cycle per conflict.
 * Fix the real cause of the npm ECONNREFUSED loop: Chromium's own
   `third_party/node/package-lock.json` at this tag ships **150 `resolved` URLs pointing at
   Google's internal mirror** (`http://airlock-proxy.uplink.goog:999/npm/artifact-foundry-prod/ah-3p-staging-npm/`).

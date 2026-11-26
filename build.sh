@@ -296,6 +296,7 @@ fi
 if [ "$RESUME" != y ]; then
   ## Run ungoogled-chromium scripts
   patch -p1 --ignore-whitespace -i patches/Other/ungoogled-main-repo-fix.patch --no-backup-if-mismatch
+  [ $? -eq 0 ] || { echo "FATAL: patches/Other/ungoogled-main-repo-fix.patch failed (no retry)"; exit 42; }
   # Remove the cache file if exists
   cache_file="domsubcache.tar.gz"
   if [[ -f ${cache_file} ]] ; then
@@ -305,11 +306,36 @@ if [ "$RESUME" != y ]; then
   # Ignore the pruning error
   python3 ungoogled-chromium/utils/prune_binaries.py src ungoogled-chromium/pruning.list --keep-contingent-paths || true
   python3 ungoogled-chromium/utils/patches.py apply src ungoogled-chromium/patches
+  [ $? -eq 0 ] || { echo "FATAL: upstream ungoogled-chromium patch set failed (no retry)"; exit 42; }
   python3 ungoogled-chromium/utils/domain_substitution.py apply -r ungoogled-chromium/domain_regex.list -f ungoogled-chromium/domain_substitution.list -c ${cache_file} src
 
   # Additional Source Patches
   ## Extra fixes for Chromium source
-  python3 ungoogled-chromium/utils/patches.py apply src patches
+  # Apply our patch series one patch at a time so a single bad hunk does not hide the
+  # rest: every conflict is reported in one run instead of one per 45-minute CI cycle.
+  # (A failed patch can cascade into its neighbours; the .rej files show what broke.)
+  _failed_list=""
+  _failed_count=0
+  _applied=0
+  while IFS= read -r _p || [ -n "${_p}" ]; do
+      case "${_p}" in ''|'#'*) continue ;; esac
+      if patch -p1 --ignore-whitespace --forward --no-backup-if-mismatch \
+                -i "patches/${_p}" -d src >/dev/null 2>&1; then
+          _applied=$((_applied + 1))
+      else
+          echo "PATCH FAILED: ${_p}"
+          _failed_list="${_failed_list}${_p}"$'\n'
+          _failed_count=$((_failed_count + 1))
+      fi
+  done < patches/series
+  echo "patches applied: ${_applied}, failed: ${_failed_count}"
+  if [ "${_failed_count}" -ne 0 ]; then
+      echo "=============================================================="
+      echo "FATAL: ${_failed_count} patch(es) do not apply to Chromium ${chromium_version}:"
+      printf '%s' "${_failed_list}"
+      echo "=============================================================="
+      exit 42
+  fi
   ## Second pruning list
   pruning_list_2="pruning_2.list"
   python3 ungoogled-chromium/utils/prune_binaries.py src ${pruning_list_2} --keep-contingent-paths || true
