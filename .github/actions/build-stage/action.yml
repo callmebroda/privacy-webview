@@ -51,7 +51,7 @@ runs:
       run: >
         .github/scripts/hosted-build.sh --install-deps --resume
         --arch "${{ inputs.architecture }}"
-        --target chrome_modern_target
+        --target webview_target
 
     - name: Pack build tree
       if: steps.build.outputs.status == 'running'
@@ -92,7 +92,7 @@ runs:
       shell: bash
       run: |
         cd /mnt/ugc
-        build/release.sh "${{ inputs.architecture }}"
+        build/release-webview.sh "${{ inputs.architecture }}"
         . ./.build_config
         echo "UGC_VERSION=${chromium_version}-${ungoogled_chromium_android_revision}" >> "$GITHUB_ENV"
 

@@ -40,7 +40,7 @@ jobs:
         run: >
           .github/scripts/hosted-build.sh --install-deps --prepare-only
           --arch "${{ inputs.architecture }}"
-          --target chrome_modern_target
+          --target webview_target
       - name: Pack build tree
         shell: bash
         env:

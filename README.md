@@ -1,5 +1,27 @@
 # ungoogled-chromium-android
 
+> [!WARNING]
+> ### Experimental private build — not an official release
+>
+> This repository is a **personal, unsupported experiment**, forked from
+> [ungoogled-software/ungoogled-chromium-android](https://github.com/ungoogled-software/ungoogled-chromium-android).
+> It is **not** an official ungoogled-chromium release and is not endorsed by that project.
+>
+> * It builds **only the Android System WebView** (`system_webview_apk`). No
+>   `ChromePublic_*` browser assets are produced here.
+> * It targets **Chromium 158.0.8127.88**, bumped from upstream's 156.0.8078.79, so the
+>   patch series has **not been validated against this milestone**. Builds may fail with
+>   patch conflicts, and any APK produced may be broken or unstable.
+> * No release keystore is configured, so output is **debug-signed** unless you add
+>   `KEYSTORE_B64` / `KEYSTORE_PASS` secrets. Debug-signed APKs must not be published.
+> * Android only accepts this as a WebView provider if the package
+>   `org.ungoogled.chromium.webview` and its certificate are whitelisted in
+>   `config_webview_packages.xml` — that means root plus a Magisk/KernelSU overlay.
+> * **No support, no warranty, no issue triage.** Do not report problems with this fork
+>   to the upstream project.
+>
+> Read [EXPERIMENTAL.md](EXPERIMENTAL.md) before building or installing anything from here.
+
 Please see [CHANGELOG](CHANGELOG.md) for latest updates.
 
 *A lightweight approach to removing Google web service dependency*

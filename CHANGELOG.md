@@ -1,3 +1,9 @@
+# 158.0.8127.88-1 (experimental, private fork)
+* Chromium bumped 156.0.8078.79 -> 158.0.8127.88. Patch series NOT yet validated at this milestone.
+* Build the WebView only (`webview_target` / `system_webview_apk`); the browser target is no longer built.
+* Added `build/release-webview.sh` for WebView-only signing and asset assembly.
+* Not an official ungoogled-chromium release. See EXPERIMENTAL.md.
+
 # 156.0.8078.79-1
 * Upstream update
 
