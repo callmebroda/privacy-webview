@@ -153,8 +153,15 @@ if [ "$ALREADY_PREPARED" != y ]; then
                 :
             else
                 git -C "src/$d" am --abort 2>/dev/null || true
-                echo "FATAL: subproject patch $(basename "$p") did not apply to src/$d" >&2
-                exit 42
+                if [ "$d" = v8 ]; then
+                    # v8 must be patched: Vanadium's args enable DrumBrake on Android and
+                    # that support only exists in these patches.
+                    echo "FATAL: subproject patch $(basename "$p") did not apply to src/$d" >&2
+                    exit 42
+                fi
+                # search_engines_data is content only (extra search engines). gclient does
+                # not always populate it, and losing it cannot break the WebView build.
+                echo "WARN: skipping $(basename "$p") for src/$d (optional subproject)" >&2
             fi
         done < <(find "$src_dir" -name '*.patch' | sort)
     done
