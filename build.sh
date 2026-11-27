@@ -47,6 +47,11 @@ if [ ! -d depot_tools ]; then
     log "cloning depot_tools"
     git clone -q --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
 fi
+# Vanadium's gclient hook runs `git -C src/v8 am` itself, without -c identity flags.
+# On a bare runner that dies with "Committer identity unknown", so set it globally.
+git config --global user.name  "vanadium-backport build"
+git config --global user.email "build@localhost"
+
 export PATH="$here/depot_tools:$PATH"
 # depot_tools ships without its bundled python until it is bootstrapped, and
 # DEPOT_TOOLS_UPDATE=0 suppresses that bootstrap - which is why "gn gen" died with
@@ -150,7 +155,7 @@ if [ ! -f "$out/build.ninja" ]; then
         echo '# --- backport overrides ---'
         echo 'target_os = "android"'
         echo "target_cpu = \"$cpu\""
-        echo 'min_sdk_version = 29'
+        echo 'default_min_sdk_version = 29'   # global arg; the per-target value is set in patches 0022/0024/0025
         echo 'system_webview_package_name = "app.vanadium.webview"'
         echo 'is_official_build = false'
         echo 'symbol_level = 0'

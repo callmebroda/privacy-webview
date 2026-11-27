@@ -40,7 +40,7 @@ if [ -n "$KS" ] && [ -f "$KS" ] && [ -n "$KS_PASSFILE" ] && [ -f "$KS_PASSFILE" 
     PW=$(cat "$KS_PASSFILE")
     "$APKSIGNER" sign --ks "$KS" --ks-key-alias "$KS_ALIAS" \
         --ks-pass "pass:$PW" --key-pass "pass:$PW" \
-        --in "$WV_IN" --out "$REL/SystemWebView_${ARCH}.apk"
+        --in "$WV_IN" --out "$REL/$(basename "$WV_IN" .apk)_${ARCH}.apk"
     WFP=$("$APKSIGNER" verify --print-certs "$REL/SystemWebView_${ARCH}.apk" 2>/dev/null \
           | grep -m1 "certificate SHA-256 digest" | awk '{print $NF}' \
           | sed 's/../&:/g; s/:$//' | tr 'a-f' 'A-F' || true)
@@ -50,7 +50,7 @@ if [ -n "$KS" ] && [ -f "$KS" ] && [ -n "$KS_PASSFILE" ] && [ -f "$KS_PASSFILE" 
     echo "signed SystemWebView as $KS_ALIAS ($KFP)"
 else
     echo "WARN: no keystore supplied, copying build output as-is (NOT release-signed)."
-    cp "$WV_IN" "$REL/SystemWebView_${ARCH}.apk"
+    cp "$WV_IN" "$REL/$(basename "$WV_IN" .apk)_${ARCH}.apk"
 fi
 
 ( cd "$REL"
