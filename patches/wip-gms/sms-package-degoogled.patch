@@ -1,0 +1,191 @@
+diff --git a/content/public/android/java/src/org/chromium/content/browser/sms/SmsProviderGms.java b/content/public/android/java/src/org/chromium/content/browser/sms/SmsProviderGms.java
+--- a/content/public/android/java/src/org/chromium/content/browser/sms/SmsProviderGms.java
++++ b/content/public/android/java/src/org/chromium/content/browser/sms/SmsProviderGms.java
+@@ -5,6 +5,9 @@
+ package org.chromium.content.browser.sms;
+ 
+ import androidx.annotation.VisibleForTesting;
++
++import com.google.android.gms.common.ConnectionResult;
++import com.google.android.gms.common.GoogleApiAvailability;
+ 
+ import org.jni_zero.CalledByNative;
+ import org.jni_zero.JNINamespace;
+@@ -89,7 +92,12 @@
+     @CalledByNative
+     private static SmsProviderGms create(long smsProviderGmsAndroid, @GmsBackend int backend) {
+         Log.d(TAG, "Creating SmsProviderGms");
+-        boolean isVerificationBackendAvailable = false;
++        boolean isVerificationBackendAvailable =
++                GoogleApiAvailability.getInstance()
++                                .isGooglePlayServicesAvailable(
++                                        ContextUtils.getApplicationContext(),
++                                        MIN_GMS_VERSION_NUMBER_WITH_CODE_BROWSER_BACKEND)
++                        == ConnectionResult.SUCCESS;
+         return new SmsProviderGms(smsProviderGmsAndroid, backend, isVerificationBackendAvailable);
+     }
+ 
+diff --git a/content/public/android/java/src/org/chromium/content/browser/sms/SmsVerificationReceiver.java b/content/public/android/java/src/org/chromium/content/browser/sms/SmsVerificationReceiver.java
+--- a/content/public/android/java/src/org/chromium/content/browser/sms/SmsVerificationReceiver.java
++++ b/content/public/android/java/src/org/chromium/content/browser/sms/SmsVerificationReceiver.java
+@@ -4,10 +4,7 @@
+ 
+ package org.chromium.content.browser.sms;
+ 
+-import static org.chromium.build.NullUtil.assumeNonNull;
+-
+ import android.app.Activity;
+-import android.app.PendingIntent;
+ import android.content.BroadcastReceiver;
+ import android.content.Context;
+ import android.content.Intent;
+@@ -15,18 +12,7 @@
+ 
+ import androidx.annotation.IntDef;
+ 
+-import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
+-import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
+-import com.google.android.gms.auth.api.phone.SmsRetriever;
+-import com.google.android.gms.auth.api.phone.SmsRetrieverStatusCodes;
+-import com.google.android.gms.common.api.ApiException;
+-import com.google.android.gms.common.api.CommonStatusCodes;
+-import com.google.android.gms.common.api.ResolvableApiException;
+-import com.google.android.gms.common.api.Status;
+-import com.google.android.gms.tasks.Task;
+-
+ import org.chromium.base.ContextUtils;
+-import org.chromium.base.IntentUtils;
+ import org.chromium.base.Log;
+ import org.chromium.base.metrics.RecordHistogram;
+ import org.chromium.build.annotations.NullMarked;
+@@ -81,18 +67,15 @@
+         // message is received.
+         if (DEBUG) Log.i(TAG, "Registering intent filters.");
+         IntentFilter filter = new IntentFilter();
+-        filter.addAction(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION);
++        filter.addAction("com.google.android.gms.auth.api.phone.SMS_CODE_RETRIEVED");
+ 
+         // The SEND_PERMISSION permission is not documented to held by the sender of this broadcast,
+         // but it's coming from the same place the UserConsent (SmsRetriever.SMS_RETRIEVED_ACTION)
+         // broadcast is coming from, so the sender will be holding this permission. This prevents
+         // other apps from spoofing verification codes.
+         ContextUtils.registerExportedBroadcastReceiver(
+-                mContext, this, filter, SmsRetriever.SEND_PERMISSION);
+-    }
+-
+-    public SmsCodeBrowserClient createClient() {
+-        return SmsCodeRetriever.getBrowserClient(mContext);
++                mContext, this, filter,
++                "com.google.android.gms.auth.api.phone.permission.SEND");
+     }
+ 
+     public void destroy() {
+@@ -110,29 +93,13 @@
+             return;
+         }
+ 
+-        if (!SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION.equals(intent.getAction())) {
++        if (!"com.google.android.gms.auth.api.phone.SMS_CODE_RETRIEVED".equals(
++                intent.getAction())) {
+             return;
+         }
+ 
+         if (intent.getExtras() == null) {
+             return;
+-        }
+-
+-        Status status = IntentUtils.safeGetParcelableExtra(intent, SmsRetriever.EXTRA_STATUS);
+-        if (status == null) {
+-            return;
+-        }
+-
+-        switch (status.getStatusCode()) {
+-            case CommonStatusCodes.SUCCESS:
+-                String message = intent.getExtras().getString(SmsCodeRetriever.EXTRA_SMS_CODE_LINE);
+-                if (DEBUG) Log.d(TAG, "Got message: %s!", message);
+-                mProvider.onReceive(message, GmsBackend.VERIFICATION);
+-                break;
+-            case CommonStatusCodes.TIMEOUT:
+-                if (DEBUG) Log.d(TAG, "Timeout");
+-                mProvider.onTimeout();
+-                break;
+         }
+     }
+ 
+@@ -154,75 +121,10 @@
+      */
+     public void onRetrieverTaskFailure(boolean isLocalRequest, Exception e) {
+         if (DEBUG) Log.d(TAG, "Task failed. Attempting recovery.", e);
+-        ApiException exception = (ApiException) e;
+-        switch (exception.getStatusCode()) {
+-            case SmsRetrieverStatusCodes.API_NOT_CONNECTED -> {
+-                reportBackendAvailability(BackendAvailability.API_NOT_CONNECTED);
+-                mProvider.onMethodNotAvailable(isLocalRequest);
+-                Log.d(TAG, "update GMS services.");
+-            }
+-            case SmsRetrieverStatusCodes.PLATFORM_NOT_SUPPORTED -> {
+-                reportBackendAvailability(BackendAvailability.PLATFORM_NOT_SUPPORTED);
+-                mProvider.onMethodNotAvailable(isLocalRequest);
+-                Log.d(TAG, "old android platform.");
+-            }
+-            case SmsRetrieverStatusCodes.API_NOT_AVAILABLE -> {
+-                reportBackendAvailability(BackendAvailability.API_NOT_AVAILABLE);
+-                mProvider.onMethodNotAvailable(isLocalRequest);
+-                Log.d(TAG, "not the default browser.");
+-            }
+-            case SmsRetrieverStatusCodes.USER_PERMISSION_REQUIRED -> {
+-                cancelRequestAndReportBackendAvailability();
+-                Log.d(TAG, "user permission is required.");
+-            }
+-            case CommonStatusCodes.RESOLUTION_REQUIRED -> {
+-                if (exception instanceof ResolvableApiException) {
+-                    // This occurs if the default browser is in NONE permission
+-                    // state. Resolve it by calling PendingIntent.send() method.
+-                    // This shows the consent dialog to user so they grant
+-                    // one-time permission. The dialog result will be received
+-                    // via `onPermissionDone()`
+-                    ResolvableApiException rex = (ResolvableApiException) exception;
+-                    try {
+-                        PendingIntent resolutionIntent = rex.getResolution();
+-                        assumeNonNull(mProvider.getWindow())
+-                                .showIntent(
+-                                        resolutionIntent,
+-                                        new WindowAndroid.IntentCallback() {
+-                                            @Override
+-                                            public void onIntentCompleted(
+-                                                    int resultCode, @Nullable Intent data) {
+-                                                // Backend availability will be recorded inside
+-                                                // |onPermissionDone|.
+-                                                onPermissionDone(resultCode, isLocalRequest);
+-                                            }
+-                                        },
+-                                        null);
+-                    } catch (Exception ex) {
+-                        cancelRequestAndReportBackendAvailability();
+-                        Log.e(TAG, "Cannot launch user permission", ex);
+-                    }
+-                }
+-            }
+-            default -> Log.w(TAG, "Unexpected exception", e);
+-        }
++        Log.w(TAG, "Unexpected exception", e);
+     }
+ 
+     public void listen(boolean isLocalRequest) {
+-        Wrappers.SmsRetrieverClientWrapper client = mProvider.getClient();
+-        Task<Void> task = client.startSmsCodeBrowserRetriever();
+-
+-        task.addOnSuccessListener(
+-                _ -> {
+-                    this.reportBackendAvailability(BackendAvailability.AVAILABLE);
+-                    mProvider.verificationReceiverSucceeded(isLocalRequest);
+-                });
+-        task.addOnFailureListener(
+-                (Exception e) -> {
+-                    this.onRetrieverTaskFailure(isLocalRequest, e);
+-                    mProvider.verificationReceiverFailed(isLocalRequest);
+-                });
+-
+         if (DEBUG) Log.d(TAG, "Installed task");
+     }
+ 
