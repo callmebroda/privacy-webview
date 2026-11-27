@@ -14,13 +14,14 @@ ARCH=arm64
 TARGET=webview_target
 RESUME=n
 INSTALL_DEPS=n
+PREPARE_ONLY=n
 while [ $# -gt 0 ]; do
     case "$1" in
         --arch) ARCH="$2"; shift 2 ;;
         --target) TARGET="$2"; shift 2 ;;
         --resume) RESUME=y; shift ;;
         --install-deps) INSTALL_DEPS=y; shift ;;
-        --prepare-only) shift ;;
+        --prepare-only) PREPARE_ONLY=y; shift ;;
         *) echo "unknown arg: $1" >&2; exit 2 ;;
     esac
 done
@@ -124,6 +125,10 @@ if [ ! -f "$out/build.ninja" ]; then
 fi
 
 # ------------------------------------------------------------------ build
+if [ "$PREPARE_ONLY" = y ]; then
+    log "prepare-only: fetched, patched and configured; not building"
+    exit 0
+fi
 ninja_target=system_webview_apk
 if [ "$TARGET" = webview_target ] || [ "$TARGET" = vanadium_webview_apk ]; then
     ninja_target=vanadium_webview_apk
