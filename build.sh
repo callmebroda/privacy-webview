@@ -152,6 +152,14 @@ if [ ! -f "$out/build.ninja" ]; then
         echo 'blink_symbol_level = 0'
         echo 'v8_symbol_level = 0'
         echo 'use_thin_lto = false'
+        # Vanadium's args.gn sets is_cfi = true, and //build/config/compiler/compiler.gni
+        # asserts "CFI requires ThinLTO". We build without ThinLTO to fit a 4-core/16 GB
+        # runner, so CFI has to go too. This costs a security hardening (not privacy) -
+        # to get it back, drop both use_thin_lto and is_cfi overrides and build on a
+        # machine with 32 GB+ RAM.
+        echo 'is_cfi = false'
+        echo 'use_cfi_cast = false'   # only meaningful with is_cfi; keep the pair consistent
+        echo 'use_siso = false'       # siso needs its CIPD binary; plain ninja for the chained parts
         echo 'dcheck_always_on = false'
         echo 'treat_warnings_as_errors = false'
         echo 'android_static_analysis = "off"'
