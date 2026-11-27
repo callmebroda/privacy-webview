@@ -1,0 +1,45 @@
+author: bearinmindcat <bearincrypto@gmail.com>
+
+diff --git a/third_party/android_deps/BUILD.gn b/third_party/android_deps/BUILD.gn
+--- a/third_party/android_deps/BUILD.gn
++++ b/third_party/android_deps/BUILD.gn
+@@ -233,7 +233,6 @@
+       deps = [
+         "$google_play_services_package:google_play_services_base_java",
+         "$google_play_services_package:google_play_services_basement_java",
+-        "$google_play_services_package:google_play_services_flags_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+         "//third_party/androidx:androidx_core_core_java",
+@@ -296,7 +295,6 @@
+         "$google_play_services_package:google_play_services_base_java",
+         "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_iid_java",
+-        "$google_play_services_package:google_play_services_stats_java",
+         "//third_party/androidx:androidx_collection_collection_java",
+         "//third_party/androidx:androidx_core_core_java",
+         "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
+@@ -328,7 +326,6 @@
+       deps = [
+         "$google_play_services_package:google_play_services_base_java",
+         "$google_play_services_package:google_play_services_basement_java",
+-        "$google_play_services_package:google_play_services_stats_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/androidx:androidx_collection_collection_java",
+         "//third_party/androidx:androidx_core_core_java",
+@@ -416,7 +413,6 @@
+         "$google_play_services_package:google_play_services_base_java",
+         "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_clearcut_java",
+-        "$google_play_services_package:google_play_services_flags_java",
+         "$google_play_services_package:google_play_services_phenotype_java",
+       ]
+     }
+@@ -648,7 +644,6 @@
+         "$google_play_services_package:google_play_services_base_java",
+         "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_cloud_messaging_java",
+-        "$google_play_services_package:google_play_services_stats_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+         "//third_party/androidx:androidx_annotation_annotation_java",

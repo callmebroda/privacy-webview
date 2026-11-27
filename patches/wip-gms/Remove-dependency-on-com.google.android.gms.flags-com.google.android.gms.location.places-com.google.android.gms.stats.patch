@@ -1,0 +1,56 @@
+From: Wengling Chen <feiyu2817@gmail.com>
+Date: Sat, 2 Nov 2019 07:57:37 +0100
+Subject: Remove dependency on com.google.android.gms.flags,
+ com.google.android.gms.location.places, com.google.android.gms.stats
+
+---
+ third_party/android_deps/autorolled/BUILD.gn | 42 ----------------------------
+ 1 file changed, 42 deletions(-)
+
+diff --git a/third_party/android_deps/BUILD.gn b/third_party/android_deps/BUILD.gn
+--- a/third_party/android_deps/BUILD.gn
++++ b/third_party/android_deps/BUILD.gn
+@@ -935,21 +935,6 @@
+     }
+   }
+ 
+-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+-  if (google_play_services_package == "//third_party/android_deps") {
+-    android_aar_prebuilt("google_play_services_flags_java") {
+-      aar_path = "cipd/libs/com_google_android_gms_play_services_flags/play-services-flags.aar"
+-      info_path = "committed/libs/com_google_android_gms_play_services_flags/com_google_android_gms_play_services_flags.info"
+-      enable_bytecode_checks = false
+-
+-      # To remove visibility constraint, add this dependency to
+-      # //third_party/android_deps/build.gradle.template
+-      visibility = [
+-      ]
+-      deps = [
+-      ]
+-    }
+-  }
+ 
+   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+   if (google_play_services_package == "//third_party/android_deps") {
+@@ -967,21 +952,6 @@
+     }
+   }
+ 
+-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+-  if (google_play_services_package == "//third_party/android_deps") {
+-    android_aar_prebuilt("google_play_services_stats_java") {
+-      aar_path = "cipd/libs/com_google_android_gms_play_services_stats/play-services-stats.aar"
+-      info_path = "committed/libs/com_google_android_gms_play_services_stats/com_google_android_gms_play_services_stats.info"
+-      enable_bytecode_checks = false
+-
+-      # To remove visibility constraint, add this dependency to
+-      # //third_party/android_deps/build.gradle.template
+-      visibility = [
+-      ]
+-      deps = [
+-      ]
+-    }
+-  }
+ 
+   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+   android_aar_prebuilt("com_google_android_play_core_common_java") {

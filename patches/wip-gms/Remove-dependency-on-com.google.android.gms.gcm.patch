@@ -1,0 +1,390 @@
+From: Wengling Chen <feiyu2817@gmail.com>
+Date: Sat, 2 Nov 2019 07:56:44 +0100
+Subject: Remove dependency on com.google.android.gms.gcm
+
+It also disalbes Snippets, auto-update of offline pages and launching browser from background service.
+The snippets are already disabled in native codes, this will disable it on Java level.
+---
+  chrome/android/BUILD.gn                      |  2 --
+  chrome/android/javatests/BUILD.gn            |  1 -
+  chrome/android/junit/BUILD.gn                |  1 -
+  third_party/android_deps/autorolled/BUILD.gn | 19 -------------------
+  4 files changed, 23 deletions(-)
+
+--- a/chrome/android/BUILD.gn
++++ b/chrome/android/BUILD.gn
+@@ -324,7 +324,6 @@ if (_is_default_toolchain) {
+       "$google_play_services_package:google_play_services_basement_java",
+       "$google_play_services_package:google_play_services_cast_framework_java",
+       "$google_play_services_package:google_play_services_cast_java",
+-      "$google_play_services_package:google_play_services_gcm_java",
+       "$google_play_services_package:google_play_services_iid_java",
+       "$google_play_services_package:google_play_services_tasks_java",
+       "$google_play_services_package:google_play_services_vision_common_java",
+@@ -2043,7 +2042,6 @@ if (_is_default_toolchain) {
+     ]
+     deps = [
+       ":chrome_java",
+-      "$google_play_services_package:google_play_services_gcm_java",
+       "//base:base_java",
+       "//base:base_java_test_support",
+       "//build/android:build_java",
+--- a/chrome/android/javatests/BUILD.gn
++++ b/chrome/android/javatests/BUILD.gn
+@@ -57,7 +57,6 @@ android_library("chrome_test_java_helper
+     "$google_play_services_package:google_play_services_basement_java",
+     "$google_play_services_package:google_play_services_cast_framework_java",
+     "$google_play_services_package:google_play_services_cast_java",
+-    "$google_play_services_package:google_play_services_gcm_java",
+     "$google_play_services_package:google_play_services_iid_java",
+     "$google_play_services_package:google_play_services_tasks_java",
+     "//base:base_java",
+--- a/chrome/android/junit/BUILD.gn
++++ b/chrome/android/junit/BUILD.gn
+@@ -51,7 +51,6 @@ if (is_android) {
+       "$google_play_services_package:google_play_services_basement_java",
+       "$google_play_services_package:google_play_services_cast_framework_java",
+       "$google_play_services_package:google_play_services_cast_java",
+-      "$google_play_services_package:google_play_services_gcm_java",
+       "$google_play_services_package:google_play_services_tasks_java",
+       "//base:base_java",
+       "//base:base_java_test_support",
+diff --git a/third_party/android_deps/BUILD.gn b/third_party/android_deps/BUILD.gn
+--- a/third_party/android_deps/BUILD.gn
++++ b/third_party/android_deps/BUILD.gn
+@@ -106,7 +106,6 @@
+       "//third_party/android_deps:guava_java",
+       "//third_party/android_deps:material_design_java",
+       "//third_party/android_deps:protobuf_lite_runtime_java",
+-      "//third_party/androidx:androidx_core_core_java",
+       "//third_party/androidx:androidx_test_services_storage_java",
+       "//third_party/hamcrest:hamcrest_core_java",
+       "//third_party/hamcrest:hamcrest_library_java",
+@@ -125,8 +124,6 @@
+       deps = [
+         "$google_play_services_package:google_play_services_auth_api_phone_java",
+         "$google_play_services_package:google_play_services_auth_base_java",
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_fido_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/androidx:androidx_fragment_fragment_java",
+@@ -144,8 +141,6 @@
+       deps = [
+         ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+         ":org_jetbrains_kotlinx_kotlinx_coroutines_play_services_java",
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+       ]
+@@ -159,11 +154,8 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_auth_base/com_google_android_gms_play_services_auth_base.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+-        "//third_party/androidx:androidx_collection_collection_java",
+       ]
+     }
+   }
+@@ -175,8 +167,6 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_auth_blockstore/com_google_android_gms_play_services_auth_blockstore.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+       ]
+@@ -190,10 +180,7 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+-        "//third_party/androidx:androidx_collection_collection_java",
+-        "//third_party/androidx:androidx_core_core_java",
+         "//third_party/androidx:androidx_fragment_fragment_java",
+       ]
+     }
+@@ -206,8 +193,6 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "//third_party/androidx:androidx_collection_collection_java",
+-        "//third_party/androidx:androidx_core_core_java",
+         "//third_party/androidx:androidx_fragment_fragment_java",
+       ]
+ 
+@@ -231,11 +216,8 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_cast/com_google_android_gms_play_services_cast.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+-        "//third_party/androidx:androidx_core_core_java",
+         "//third_party/androidx:androidx_mediarouter_mediarouter_java",
+       ]
+     }
+@@ -251,16 +233,12 @@
+         "$google_play_services_package:google_android_datatransport_transport_api_java",
+         "$google_play_services_package:google_android_datatransport_transport_backend_cct_java",
+         "$google_play_services_package:google_android_datatransport_transport_runtime_java",
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_cast_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:guava_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+         "//third_party/androidx:androidx_appcompat_appcompat_java",
+-        "//third_party/androidx:androidx_collection_collection_java",
+         "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
+-        "//third_party/androidx:androidx_core_core_java",
+         "//third_party/androidx:androidx_fragment_fragment_java",
+         "//third_party/androidx:androidx_media_media_java",
+         "//third_party/androidx:androidx_mediarouter_mediarouter_java",
+@@ -277,30 +255,12 @@
+       enable_bytecode_checks = false
+       deps = [
+         ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+       ]
+     }
+   }
+ 
+-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+-  if (google_play_services_package == "//third_party/android_deps") {
+-    android_aar_prebuilt("google_play_services_gcm_java") {
+-      aar_path = "cipd/libs/com_google_android_gms_play_services_gcm/play-services-gcm.aar"
+-      info_path = "committed/libs/com_google_android_gms_play_services_gcm/com_google_android_gms_play_services_gcm.info"
+-      enable_bytecode_checks = false
+-      deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+-        "$google_play_services_package:google_play_services_iid_java",
+-        "//third_party/androidx:androidx_collection_collection_java",
+-        "//third_party/androidx:androidx_core_core_java",
+-        "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
+-      ]
+-    }
+-  }
+ 
+   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+   if (google_play_services_package == "//third_party/android_deps") {
+@@ -309,8 +269,6 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_identity_credentials/com_google_android_gms_play_services_identity_credentials.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+       ]
+@@ -324,11 +282,7 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_iid/com_google_android_gms_play_services_iid.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+-        "//third_party/androidx:androidx_collection_collection_java",
+-        "//third_party/androidx:androidx_core_core_java",
+       ]
+     }
+   }
+@@ -340,8 +294,6 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_instantapps/com_google_android_gms_play_services_instantapps.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+       ]
+     }
+@@ -356,8 +308,6 @@
+       deps = [
+         ":org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
+         ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+       ]
+@@ -382,8 +332,6 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_time/com_google_android_gms_play_services_time.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+       ]
+     }
+@@ -396,8 +344,6 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_vision/com_google_android_gms_play_services_vision.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_vision_common_java",
+       ]
+     }
+@@ -410,8 +356,6 @@
+       info_path = "committed/libs/com_google_android_gms_play_services_vision_common/com_google_android_gms_play_services_vision_common.info"
+       enable_bytecode_checks = false
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_clearcut_java",
+         "$google_play_services_package:google_play_services_phenotype_java",
+       ]
+@@ -449,7 +393,6 @@
+         "//third_party/androidx:androidx_cardview_cardview_java",
+         "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
+         "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+-        "//third_party/androidx:androidx_core_core_java",
+         "//third_party/androidx:androidx_customview_customview_java",
+         "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
+         "//third_party/androidx:androidx_dynamicanimation_dynamicanimation_java",
+@@ -481,7 +424,6 @@
+       visibility = [ "//third_party/android_deps:*" ]
+       deps = [
+         ":com_google_android_play_core_common_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+       ]
+     }
+@@ -499,7 +441,6 @@
+       visibility = [ "//third_party/android_deps:*" ]
+       deps = [
+         ":com_google_android_play_core_common_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+       ]
+     }
+@@ -512,7 +453,6 @@
+     enable_bytecode_checks = false
+     deps = [
+       ":com_google_android_play_core_common_java",
+-      "$google_play_services_package:google_play_services_basement_java",
+       "$google_play_services_package:google_play_services_tasks_java",
+     ]
+   }
+@@ -592,7 +532,6 @@
+         ":org_jetbrains_kotlinx_kotlinx_coroutines_play_services_java",
+         "$google_play_services_package:google_firebase_firebase_annotations_java",
+         "$google_play_services_package:google_firebase_firebase_components_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+         "//third_party/androidx:androidx_annotation_annotation_java",
+@@ -641,8 +580,6 @@
+         "$google_play_services_package:google_firebase_firebase_installations_interop_java",
+         "$google_play_services_package:google_firebase_firebase_installations_java",
+         "$google_play_services_package:google_firebase_firebase_measurement_connector_java",
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_cloud_messaging_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+@@ -708,11 +645,8 @@
+         "$google_play_services_package:google_firebase_firebase_components_java",
+         "$google_play_services_package:google_firebase_firebase_encoders_java",
+         "$google_play_services_package:google_firebase_firebase_encoders_json_java",
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/androidx:androidx_appcompat_appcompat_java",
+-        "//third_party/androidx:androidx_core_core_java",
+       ]
+     }
+   }
+@@ -726,7 +660,6 @@
+       deps = [
+         ":org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+         ":org_jetbrains_kotlinx_kotlinx_coroutines_guava_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+       ]
+     }
+@@ -749,7 +682,6 @@
+         "$google_play_services_package:google_android_datatransport_transport_runtime_java",
+         "$google_play_services_package:google_firebase_firebase_encoders_java",
+         "$google_play_services_package:google_firebase_firebase_encoders_json_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+         "//third_party/android_deps:guava_java",
+         "//third_party/android_deps:kotlin_stdlib_java",
+@@ -1294,11 +1226,8 @@
+         "//third_party/androidx:*",
+       ]
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_phenotype_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+-        "//third_party/androidx:androidx_core_core_java",
+       ]
+     }
+   }
+@@ -1317,8 +1246,6 @@
+         "//third_party/androidx:*",
+       ]
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+       ]
+     }
+@@ -1338,8 +1265,6 @@
+         "//third_party/androidx:*",
+       ]
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+       ]
+     }
+   }
+@@ -1358,10 +1283,7 @@
+         "//third_party/androidx:*",
+       ]
+       deps = [
+-        "$google_play_services_package:google_play_services_base_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+-        "//third_party/androidx:androidx_core_core_java",
+       ]
+     }
+   }
+@@ -1380,8 +1302,6 @@
+         "//third_party/androidx:*",
+       ]
+       deps = [
+-        "$google_play_services_package:google_play_services_basement_java",
+-        "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
+       ]
+     }
+   }
+@@ -1604,7 +1524,6 @@
+         "//third_party/androidx:*",
+       ]
+       deps = [
+-        "$google_play_services_package:google_play_services_basement_java",
+         "$google_play_services_package:google_play_services_tasks_java",
+       ]
+     }
+@@ -1647,7 +1566,6 @@
+       ]
+       deps = [
+         "$google_play_services_package:google_firebase_firebase_annotations_java",
+-        "$google_play_services_package:google_play_services_basement_java",
+       ]
+     }
+   }
