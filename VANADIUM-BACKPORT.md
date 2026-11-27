@@ -23,34 +23,49 @@ patches/0025-Add-dedicated-webview-target-for-Vanadium.patch:      +      min_sd
 All three are already changed to `29` in `vanadium/patches/` on this branch. Nothing else
 in their 304-patch series hardcodes an SDK level.
 
+## The config APK (patches 0022 / 0024) is not needed
+
+`0022` adds `vanadium/android_config/` — a **resources-only** APK
+(`android:hasCode="false"`, no code, no shared library) that GrapheneOS uses to share
+config between Vanadium apps. The WebView target does not reference it: patch `0025`
+contains no `config_apk` / `vanadium_config` dependency.
+
+The Magisk module proves the same thing from the other end — it ships only
+`VanadiumWebView.apk` plus `Overlay/WebViewOverlay29.apk`, an RRO that whitelists
+`app.vanadium.webview` in `config_webview_packages.xml`. No config APK.
+
+So the script skips `0022` (config APK) and `0024` (browser target) by default and builds
+only the WebView. It cannot be "folded into" the WebView APK because it is a separate
+package by design — it is simply unnecessary here.
+
 ## Why this can work
 
 * Chromium 158 itself supports API 29 — the other branch proves it: 32 Vanadium patches
   compiled and produced a working `minSdk 29` WebView.
-* Vanadium's patches are mostly feature-flag defaults and feature removals, not
-  API-30+ platform code. Chromium guards platform APIs with `SDK_INT` checks.
+* Vanadium's patches are mostly feature-flag defaults and feature removals, not API-30+
+  platform code. Chromium guards platform APIs with `SDK_INT` checks.
 * 138 of the patches create their own `vanadium/chromium_src/` overlay files, so no
   separate GrapheneOS checkout is needed — the patch series is self-contained.
 
 ## What to expect to break
 
-1. **Patches 0022 / 0024 / 0025** add the GrapheneOS-specific targets (`vanadium_config_apk`,
-   `vanadium_browser_apk`, `vanadium_webview_apk`). If those targets reference GrapheneOS
-   OS-side bits, skip them with `SKIP_PATCHES="0022 0024"` and build Chromium's standard
-   `system_webview_apk` instead — the script falls back to it automatically.
-2. **GrapheneOS-only features** — e.g. their coarse-location API added around 157. Those
+1. **GrapheneOS-only features** — e.g. their coarse-location API added around 157. Those
    patches compile but the feature is inert on stock Android. If one fails to compile,
-   skip it; nothing of value is lost on a non-GrapheneOS device.
-3. **Runtime on API 29/30** — features that call newer platform APIs may misbehave even
+   skip it with `SKIP_PATCHES="0016 0022 0024 ..."`; nothing of value is lost on a
+   non-GrapheneOS device.
+2. **Runtime on API 29/30** — features that call newer platform APIs may misbehave even
    though the app installs. Test on the device before trusting it.
+3. **`vanadium_webview_apk` target** — if their dedicated target needs the config APK
+   plumbing, the script falls back to Chromium's stock `system_webview_apk`, which carries
+   the same patches.
 
 ## Build
 
 ```
 export PATH=$PWD/depot_tools:$PATH
-./build-vanadium.sh                       # arm64, Vanadium 158.0.8127.92
-SKIP_PATCHES="0022 0024" ./build-vanadium.sh
-VANADIUM_VERSION=158.0.8127.92 TARGET=system_webview_apk ./build-vanadium.sh
+./build-vanadium.sh                                  # arm64, Vanadium 158.0.8127.92
+SKIP_PATCHES="" ./build-vanadium.sh                  # apply everything, incl. config APK
+TARGET=system_webview_apk ./build-vanadium.sh        # stock WebView target
 ```
 
 The script clones Chromium at the tag Vanadium targets, applies `vanadium/patches/*.patch`
@@ -60,9 +75,8 @@ in numeric order with `git am`, writes `vanadium/args.gn` plus the minSdk-29 ove
 ## Bumping to a newer Vanadium
 
 ```
-git -C vanadium-src fetch --depth 1 origin <new-tag>   # or re-clone
+git -C vanadium-src fetch --depth 1 origin <new-tag>
 rm -rf vanadium/patches && cp -a vanadium-src/patches vanadium/
-# re-apply the minSdk change to 0022/0024/0025 if the files still exist
 sed -i 's/min_sdk_version = 34/min_sdk_version = 29/' vanadium/patches/002[245]-*.patch
 VANADIUM_VERSION=<new-tag> ./build-vanadium.sh
 ```
