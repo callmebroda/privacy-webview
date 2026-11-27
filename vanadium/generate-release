@@ -1,0 +1,32 @@
+#!/bin/bash
+
+[[ $# -ge 1 ]] || exit 1
+
+set -o errexit -o nounset -o pipefail
+
+KEYSTORE=$PWD/../vanadium.keystore
+APKSIGNER=$PWD/third_party/android_sdk/public/build-tools/37.0.0/apksigner
+readonly APPS=(
+    VanadiumBrowser
+    VanadiumWebView
+    VanadiumConfig
+)
+
+read -p "Enter keystore passphrase: " -s keystore_pass
+echo
+
+for d in "$@"; do
+    cd "$d/Default/apks"
+
+    rm -rf release
+    mkdir release
+    cd release
+
+    for app in ${APPS[@]}; do
+        input=$(echo -n ../${app}*.apk)
+        [[ ! -f $input ]] && echo "missing ${app}" && continue
+        $APKSIGNER sign --ks $KEYSTORE --ks-pass file:/dev/stdin --ks-key-alias vanadium --in $input --out $app.apk <<< $keystore_pass || true
+    done
+
+    cd ../../../..
+done

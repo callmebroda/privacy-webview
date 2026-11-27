@@ -1,0 +1,1402 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: quh4gko8 <quh4gko8.vanadium@gmail.com>
+Date: Fri, 7 Nov 2025 07:00:17 +0000
+Subject: [PATCH] Add DuckDuckGo on all regional list of search engines
+
+Commands used for appending and replacing regional list of search
+engines in json, in order:
+
+```bash
+    sed -ri "N;N;s/,(|\n)?\n        \"\&duckduckgo\"//g;P;D" definitions/regional_settings.json
+
+    sed -ri "s/\"search_engines\": \[/&\n        \"\&duckduckgo\",/g" definitions/regional_settings.json
+
+```
+---
+ definitions/regional_settings.json | 301 +++++++++++++++--------------
+ 1 file changed, 156 insertions(+), 145 deletions(-)
+
+diff --git a/definitions/regional_settings.json b/definitions/regional_settings.json
+index ef6d399..9879b2f 100644
+--- a/definitions/regional_settings.json
++++ b/definitions/regional_settings.json
+@@ -132,63 +132,63 @@
+   "elements": {
+     "AE": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&yandex_ru"
+       ]
+     },
+     "AF": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "AL": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&yep",
+-        "&duckduckgo",
+         "&bing"
+       ]
+     },
+     "AM": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_ru",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "AO": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "AR": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "AT": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&perplexity",
+         "&ecosia",
+         "&bing",
+@@ -198,45 +198,45 @@
+     },
+     "AU": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia"
+       ]
+     },
+     "AZ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_ru",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "BA": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yep",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "BD": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "BE": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia",
+         "&perplexity",
+         "&bing",
+@@ -246,19 +246,19 @@
+     },
+     "BF": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "BG": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia",
+         "&yep",
+@@ -267,105 +267,106 @@
+     },
+     "BJ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "BO": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "BR": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "BY": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_by",
+         "&bing",
+-        "&brave",
+-        "&duckduckgo"
++        "&brave"
+       ]
+     },
+     "CA": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia"
+       ]
+     },
+     "CD": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&you"
+       ]
+     },
+     "CG": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "CH": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia"
+       ]
+     },
+     "CI": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "CL": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "CM": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "CN": {
+       "search_engines": [
++        "&duckduckgo",
+         "&baidu",
+         "&bing",
+         "&sogou",
+@@ -375,37 +376,37 @@
+     },
+     "CO": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "CR": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "CU": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&yandex_com"
+       ]
+     },
+     "CY": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia",
+         "&qwant",
+@@ -414,11 +415,11 @@
+     },
+     "CZ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&seznam",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia",
+         "&privacywall"
+@@ -426,8 +427,8 @@
+     },
+     "DE": {
+       "search_engines": [
+-        "&google",
+         "&duckduckgo",
++        "&google",
+         "&brave",
+         "&ecosia",
+         "&perplexity",
+@@ -438,9 +439,9 @@
+     },
+     "DK": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&perplexity",
+         "&bing",
+         "&ecosia",
+@@ -450,36 +451,36 @@
+     },
+     "DO": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "DZ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "EC": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "EE": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&perplexity",
+         "&ecosia",
+@@ -489,19 +490,19 @@
+     },
+     "EG": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&yandex_com"
+       ]
+     },
+     "ES": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia",
+         "&yahoo_es",
+@@ -510,18 +511,18 @@
+     },
+     "ET": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "FI": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&perplexity",
+         "&bing",
+         "&ecosia",
+@@ -531,20 +532,20 @@
+     },
+     "FR": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&ecosia",
+         "&perplexity",
+         "&qwant",
+-        "&duckduckgo",
+         "&bing",
+         "&yahoo_fr"
+       ]
+     },
+     "GB": {
+       "search_engines": [
+-        "&google",
+         "&duckduckgo",
++        "&google",
+         "&brave",
+         "&bing",
+         "&ecosia"
+@@ -552,46 +553,46 @@
+     },
+     "GE": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_com",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "GH": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "GM": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+-        "&duckduckgo",
+         "&brave",
+         "&ecosia"
+       ]
+     },
+     "GN": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+-        "&duckduckgo",
+         "&brave",
+         "&ecosia"
+       ]
+     },
+     "GR": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&yahoo_emea",
+         "&ecosia",
+@@ -600,15 +601,16 @@
+     },
+     "GT": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "HK": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&baidu",
+         "&brave",
+@@ -618,19 +620,19 @@
+     },
+     "HN": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "HR": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia",
+         "&yep",
+@@ -639,10 +641,10 @@
+     },
+     "HU": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia",
+         "&qwant",
+@@ -651,17 +653,17 @@
+     },
+     "ID": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&naver"
+       ]
+     },
+     "IE": {
+       "search_engines": [
+-        "&google",
+         "&duckduckgo",
++        "&google",
+         "&brave",
+         "&perplexity",
+         "&bing",
+@@ -672,44 +674,44 @@
+     },
+     "IL": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&yandex_ru"
+       ]
+     },
+     "IN": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&yahoo_in",
+-        "&duckduckgo"
++        "&yahoo_in"
+       ]
+     },
+     "IQ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "IR": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "IS": {
+       "search_engines": [
+-        "&google",
+         "&duckduckgo",
++        "&google",
+         "&brave",
+         "&bing",
+         "&perplexity",
+@@ -720,10 +722,10 @@
+     },
+     "IT": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia",
+         "&yahoo_it",
+@@ -732,42 +734,43 @@
+     },
+     "JO": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "JP": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yahoo_jp",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "KE": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&you"
+       ]
+     },
+     "KG": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_ru",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "KH": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+@@ -777,6 +780,7 @@
+     },
+     "KR": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&naver",
+         "&daum",
+@@ -786,15 +790,16 @@
+     },
+     "KZ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_kz",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "LA": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+@@ -804,17 +809,17 @@
+     },
+     "LB": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "LI": {
+       "search_engines": [
+-        "&google",
+         "&duckduckgo",
++        "&google",
+         "&brave",
+         "&ecosia",
+         "&perplexity",
+@@ -825,18 +830,18 @@
+     },
+     "LK": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "LT": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&perplexity",
+         "&ecosia",
+@@ -846,9 +851,9 @@
+     },
+     "LU": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&perplexity",
+         "&bing",
+         "&ecosia",
+@@ -858,9 +863,9 @@
+     },
+     "LV": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&perplexity",
+         "&ecosia",
+@@ -870,78 +875,79 @@
+     },
+     "LY": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "MA": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&you"
+       ]
+     },
+     "MD": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_ru",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "ME": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yep",
+         "&brave",
+-        "&duckduckgo",
+         "&bing"
+       ]
+     },
+     "MG": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "MK": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yep",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "ML": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+-        "&duckduckgo",
+         "&brave",
+         "&ecosia"
+       ]
+     },
+     "MM": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&baidu",
+-        "&duckduckgo"
++        "&baidu"
+       ]
+     },
+     "MN": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&naver",
+@@ -951,6 +957,7 @@
+     },
+     "MO": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&baidu",
+         "&brave",
+@@ -960,11 +967,11 @@
+     },
+     "MT": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+         "&perplexity",
+-        "&duckduckgo",
+         "&ecosia",
+         "&privacywall",
+         "&qwant"
+@@ -972,53 +979,53 @@
+     },
+     "MX": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "MY": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&baidu",
+-        "&duckduckgo"
++        "&baidu"
+       ]
+     },
+     "MZ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&you",
+-        "&duckduckgo"
++        "&you"
+       ]
+     },
+     "NE": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "NG": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "NL": {
+       "search_engines": [
+-        "&google",
+         "&duckduckgo",
++        "&google",
+         "&brave",
+         "&perplexity",
+         "&bing",
+@@ -1029,8 +1036,8 @@
+     },
+     "NO": {
+       "search_engines": [
+-        "&google",
+         "&duckduckgo",
++        "&google",
+         "&brave",
+         "&bing",
+         "&perplexity",
+@@ -1041,55 +1048,55 @@
+     },
+     "NP": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "NZ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia"
+       ]
+     },
+     "PE": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "PH": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&naver"
+       ]
+     },
+     "PK": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "PL": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia",
+         "&privacywall",
+@@ -1098,10 +1105,10 @@
+     },
+     "PT": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia",
+         "&qwant",
+@@ -1110,10 +1117,10 @@
+     },
+     "RO": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&yahoo_emea",
+         "&ecosia",
+@@ -1122,44 +1129,44 @@
+     },
+     "RS": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&yep",
+-        "&duckduckgo",
+         "&bing"
+       ]
+     },
+     "RU": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_ru",
+-        "&duckduckgo",
+         "&brave",
+         "&bing"
+       ]
+     },
+     "SA": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "SD": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&ecosia"
+       ]
+     },
+     "SE": {
+       "search_engines": [
+-        "&google",
+         "&duckduckgo",
++        "&google",
+         "&brave",
+         "&perplexity",
+         "&bing",
+@@ -1170,18 +1177,18 @@
+     },
+     "SG": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&baidu",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "SI": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+-        "&duckduckgo",
+         "&bing",
+         "&perplexity",
+         "&ecosia",
+@@ -1191,10 +1198,10 @@
+     },
+     "SK": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&perplexity",
+-        "&duckduckgo",
+         "&bing",
+         "&seznam",
+         "&ecosia",
+@@ -1203,105 +1210,106 @@
+     },
+     "SL": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&you",
+-        "&duckduckgo"
++        "&you"
+       ]
+     },
+     "SN": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "SO": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "SV": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "TD": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "TG": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "TH": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&naver",
+-        "&duckduckgo"
++        "&naver"
+       ]
+     },
+     "TJ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_ru",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "TM": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_ru",
+         "&brave",
+-        "&duckduckgo",
+         "&bing"
+       ]
+     },
+     "TN": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "TR": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_tr",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "TW": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&baidu",
+@@ -1311,35 +1319,35 @@
+     },
+     "TZ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "UA": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_ru",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "UG": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "US": {
+       "search_engines": [
+-        "&google",
+         "&duckduckgo",
++        "&google",
+         "&brave",
+         "&bing",
+         "&ecosia"
+@@ -1347,15 +1355,16 @@
+     },
+     "UY": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "UZ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yandex_ru",
+         "&brave",
+@@ -1365,15 +1374,16 @@
+     },
+     "VE": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&you",
+-        "&duckduckgo"
++        "&you"
+       ]
+     },
+     "VN": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&coccoc",
+         "&brave",
+@@ -1383,42 +1393,43 @@
+     },
+     "XK": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&yep",
+         "&brave",
+-        "&bing",
+-        "&duckduckgo"
++        "&bing"
+       ]
+     },
+     "YE": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "ZA": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&brave",
+         "&bing",
+-        "&duckduckgo",
+         "&ecosia"
+       ]
+     },
+     "ZW": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&brave",
+-        "&you",
+-        "&duckduckgo"
++        "&you"
+       ]
+     },
+     "ZZ": {
+       "search_engines": [
++        "&duckduckgo",
+         "&google",
+         "&bing",
+         "&yahoo"
