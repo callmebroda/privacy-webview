@@ -115,6 +115,7 @@ fi
 # ------------------------------------------------------------------ patches
 if [ "$ALREADY_PREPARED" != y ]; then
     log "applying Vanadium $VANADIUM_VERSION patches (minSdk 29; skipping: ${SKIP_PATCHES:-none})"
+    git -C src am --abort 2>/dev/null || true
     applied=0
     for p in "$here"/vanadium/patches/*.patch; do
         base=$(basename "$p")
@@ -136,7 +137,13 @@ if [ "$ALREADY_PREPARED" != y ]; then
     # third_party/search_engines_data/resources, plus the adblock filter lists that the
     # config APK embeds.
     log "gclient runhooks (subproject patches + filter lists)"
-    gclient runhooks
+    if ! gclient runhooks; then
+        # 21 filter lists are downloaded from third-party mirrors; one flake should not
+        # throw away the fetch + sync + 304 patches. The hook is idempotent (it checks
+        # `git diff` before patching and overwrites the lists), so retry once.
+        log "runhooks failed, retrying once"
+        gclient runhooks
+    fi
     : > src/.vanadium-patched
 fi
 
