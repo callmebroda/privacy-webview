@@ -41,6 +41,12 @@ case "$ARCH" in
     *) echo "unsupported arch: $ARCH" >&2; exit 2 ;;
 esac
 log() { printf '\n== %s\n' "$*"; }
+disk() { df -h / /mnt 2>/dev/null | sed 's/^/  /' || true; }
+
+log "start: $ARCH, Vanadium $VANADIUM_VERSION, target $TARGET"
+disk
+free_gb=$(df -Pk /mnt 2>/dev/null | awk 'NR==2 {print int($4/1048576)}' || echo 0)
+[ "${free_gb:-0}" -ge 30 ] || echo "::warning::only ${free_gb} GB free on /mnt; a Chromium build needs ~60-80 GB" >&2
 
 # ------------------------------------------------------------------ depot_tools
 if [ ! -d depot_tools ]; then
@@ -183,10 +189,13 @@ if [ ! -f "$out/build.ninja" ]; then
         echo 'treat_warnings_as_errors = false'
         echo 'android_static_analysis = "off"'
     } >> "$out/args.gn"
+    log "args.gn"
+    sed 's/^/  /' "$out/args.gn"
     ( cd src && gn gen out/Default )
 fi
 
 # ------------------------------------------------------------------ build
+disk
 if [ "$PREPARE_ONLY" = y ]; then
     log "prepare-only: fetched, patched and configured; not building"
     exit 0

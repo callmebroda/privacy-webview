@@ -75,11 +75,14 @@ jobs:
           NAME: ${{ github.event_name == 'push' && github.ref_name || inputs.release_name }}
         run: |
           files=()
-          while IFS= read -r f; do files+=("$f"); done < <(find rel -name 'ChromePublic_*.apk' -o -name 'ChromePublic_arm64.aab' -o -name 'SystemWebView_*.apk')
+          while IFS= read -r f; do files+=("$f"); done < <(find rel -name 'ChromePublic_*.apk' -o -name 'ChromePublic_arm64.aab' -o -name 'SystemWebView_*.apk' -o -name 'VanadiumWebView_*.apk')
           [ "${#files[@]}" -gt 0 ] || { echo "FATAL: no release files found"; exit 1; }
           for f in "${files[@]}"; do
               case "$f" in
-                  *.apk) [ -f "${f}.idsig" ] || { echo "FATAL: $f is not release-signed, refusing to publish"; exit 1; } ;;
+                  *.apk) if [ ! -f "${f}.idsig" ]; then
+                             echo "::warning::$f is not release-signed (no KEYSTORE_B64 secret) - skipping the GitHub release. The APK is still in the run artifacts."
+                             exit 0
+                         fi ;;
               esac
           done
           printf 'releasing %s with:\n' "$NAME"
