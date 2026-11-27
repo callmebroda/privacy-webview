@@ -94,18 +94,9 @@ fi
 # ------------------------------------------------------------------ deps
 if [ "$ALREADY_PREPARED" != y ] && [ ! -f src/.gclient-synced ]; then
     log "gclient sync + runhooks (this is the long part)"
-    cat > .gclient <<EOF
-solutions = [{
-  "name": "src",
-  "url": "https://chromium.googlesource.com/chromium/src.git",
-  "managed": False,
-  "custom_vars": {"checkout_pgo_profiles": False, "checkout_traffic_annotation_tools": False},
-}]
-target_os = ["android"]
-EOF
+    cp "$here/.gclient" .gclient
     gclient sync --nohooks --no-history --shallow -D --force --jobs 16 \
         --revision "src@$(git -C src rev-parse HEAD)"
-    gclient runhooks
     : > src/.gclient-synced
 fi
 
@@ -132,41 +123,22 @@ if [ "$ALREADY_PREPARED" != y ]; then
         fi
     done
     echo "applied $applied patches"
+
+    # Now that the tree carries Vanadium's patches (which create src/vanadium/...),
+    # run the hooks from Vanadium's .gclient: subproject patches for v8 and
+    # third_party/search_engines_data/resources, plus the adblock filter lists that the
+    # config APK embeds.
+    log "gclient runhooks (subproject patches + filter lists)"
+    gclient runhooks
     : > src/.vanadium-patched
 fi
 
 # ------------------------------------------------------------------ subprojects
-# Vanadium also patches two subprojects that live outside chromium/src. The v8 ones
-# matter: without 0001 the build asserts "DrumBrake is only available on x64, arm64 on
-# Windows, Linux and MacOS" because Vanadium's args enable v8_enable_drumbrake on Android.
-if [ "$ALREADY_PREPARED" != y ]; then
-    for d in v8 third_party/search_engines_data; do
-        src_dir="$here/vanadium/subprojects_patches/$d"
-        [ -d "$src_dir" ] || continue
-        [ -d "src/$d" ] || { echo "WARN: src/$d missing, skipping its patches" >&2; continue; }
-        log "applying subproject patches for $d"
-        # search_engines_data keeps its patches one level deeper (resources/), so glob
-        # recursively instead of assuming they sit directly in the directory.
-        while IFS= read -r p; do
-            [ -n "$p" ] || continue
-            if git -C "src/$d" -c user.name=build -c user.email=build@localhost am -q --whitespace=nowarn --keep-non-patch "$p"; then
-                :
-            else
-                git -C "src/$d" am --abort 2>/dev/null || true
-                if [ "$d" = v8 ]; then
-                    # v8 must be patched: Vanadium's args enable DrumBrake on Android and
-                    # that support only exists in these patches.
-                    echo "FATAL: subproject patch $(basename "$p") did not apply to src/$d" >&2
-                    exit 42
-                fi
-                # search_engines_data is content only (extra search engines). gclient does
-                # not always populate it, and losing it cannot break the WebView build.
-                echo "WARN: skipping $(basename "$p") for src/$d (optional subproject)" >&2
-            fi
-        done < <(find "$src_dir" -name '*.patch' | sort)
-    done
-    : > src/.vanadium-subprojects
-fi
+# Handled by Vanadium's own gclient hook (tools/common/apply_subprojects_patches.py,
+# wired in .gclient), which patches src/v8 and
+# src/third_party/search_engines_data/resources with git am and skips [tmp]/[upstream]
+# patches that no longer apply. It also fetches the adblock filter lists the config APK
+# embeds. Running it ourselves would double-apply and use the wrong target directories.
 
 # ------------------------------------------------------------------ configure
 if [ ! -f "$out/build.ninja" ]; then

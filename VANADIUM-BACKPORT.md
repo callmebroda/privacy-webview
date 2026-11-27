@@ -38,6 +38,25 @@ So the script skips `0022` (config APK) and `0024` (browser target) by default a
 only the WebView. It cannot be "folded into" the WebView APK because it is a separate
 package by design — it is simply unnecessary here.
 
+## Vanadium's own build plumbing (all of it, audited)
+
+Their repo carries more than `patches/`. Everything is now wired:
+
+| Piece | Handling |
+|---|---|
+| `patches/` (304) | `git am` in numeric order, nothing skipped |
+| `subprojects_patches/v8` (4) | applied by **their** hook to `src/v8` — mandatory, without 0001 the build asserts on DrumBrake |
+| `subprojects_patches/third_party/search_engines_data/resources` (3) | same hook, target is `src/third_party/search_engines_data/**resources**` (a separate repo) |
+| `.gclient` hooks (23) | vendored verbatim with paths rebased under `vanadium/`; includes the ~20 adblock filter-list downloads that the config APK embeds |
+| `tools/common/apply_subprojects_patches.py`, `tools/filter_lists/filter_list_download.py` | vendored; skips `[tmp]`/`[upstream]` patches that no longer apply, exactly as upstream does |
+| `args.gn` | vendored, with minSdk 29 + ThinLTO/CFI/siso overrides |
+| `generate-release` | signing only; confirms the artifact is `VanadiumWebView.apk` |
+| `checkout_pgo_profiles` | `True` upstream, `False` here — PGO is unused with `is_official_build = false` and saves ~1.5 GB |
+
+Order matters and now matches upstream: `gclient sync --nohooks` → `git am` the main
+series → `gclient runhooks` (subproject patches + filter lists, which need
+`src/vanadium/android_config/` to exist first) → `gn gen` → ninja.
+
 ## Why this can work
 
 * Chromium 158 itself supports API 29 — the other branch proves it: 32 Vanadium patches
