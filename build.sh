@@ -82,7 +82,7 @@ ALREADY_PREPARED=n
 if [ -f src/.vanadium-patched ]; then ALREADY_PREPARED=y; fi
 
 if [ "$ALREADY_PREPARED" = y ]; then
-    log "resuming with an already fetched/patched tree (no .git expected)"
+    log "resuming with an already fetched/patched tree (RESUME=${RESUME}, no .git expected)"
 else
     if [ ! -d src/.git ]; then
         log "fetching Chromium $CHROMIUM_TAG"
@@ -100,8 +100,10 @@ fi
 if [ "$ALREADY_PREPARED" != y ] && [ ! -f src/.gclient-synced ]; then
     log "gclient sync + runhooks (this is the long part)"
     cp "$here/.gclient" .gclient
-    gclient sync --nohooks --no-history --shallow -D --force --jobs 16 \
-        --revision "src@$(git -C src rev-parse HEAD)"
+    # No --revision / -D / --force: Vanadium's .gclient marks the src solution
+    # "managed: False", so gclient leaves our checked-out tag alone and only syncs the
+    # DEPS children. -D would delete unversioned trees such as src/vanadium/.
+    gclient sync --nohooks --no-history --shallow --jobs 16
     : > src/.gclient-synced
 fi
 
