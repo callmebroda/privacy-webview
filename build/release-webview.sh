@@ -17,7 +17,8 @@ VERSION=$(grep -o 'android_override_version_name="[^"]*"' "$OUT/args.gn" 2>/dev/
 REL="releases/${VERSION}-${ungoogled_chromium_android_revision}"
 mkdir -p "$REL"
 
-WV_IN=$(find "$OUT/apks" -maxdepth 1 -name "SystemWebView64.apk" | head -1)
+WV_IN=$(find "$OUT/apks" -maxdepth 1 -name "VanadiumWebView.apk" | head -1)
+[ -n "$WV_IN" ] || WV_IN=$(find "$OUT/apks" -maxdepth 1 -name "SystemWebView64.apk" | head -1)
 [ -n "$WV_IN" ] || WV_IN=$(find "$OUT/apks" -maxdepth 1 -name "SystemWebView.apk" | head -1)
 [ -n "$WV_IN" ] || { echo "FATAL: no SystemWebView.apk under $OUT/apks (webview target not built?)"; exit 1; }
 
