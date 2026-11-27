@@ -135,6 +135,30 @@ if [ "$ALREADY_PREPARED" != y ]; then
     : > src/.vanadium-patched
 fi
 
+# ------------------------------------------------------------------ subprojects
+# Vanadium also patches two subprojects that live outside chromium/src. The v8 ones
+# matter: without 0001 the build asserts "DrumBrake is only available on x64, arm64 on
+# Windows, Linux and MacOS" because Vanadium's args enable v8_enable_drumbrake on Android.
+if [ "$ALREADY_PREPARED" != y ]; then
+    for d in v8 third_party/search_engines_data; do
+        src_dir="$here/vanadium/subprojects_patches/$d"
+        [ -d "$src_dir" ] || continue
+        [ -d "src/$d" ] || { echo "WARN: src/$d missing, skipping its patches" >&2; continue; }
+        log "applying subproject patches for $d"
+        for p in "$src_dir"/*.patch; do
+            [ -e "$p" ] || continue
+            if git -C "src/$d" -c user.name=build -c user.email=build@localhost am -q --whitespace=nowarn --keep-non-patch "$p"; then
+                :
+            else
+                git -C "src/$d" am --abort 2>/dev/null || true
+                echo "FATAL: subproject patch $(basename "$p") did not apply to src/$d" >&2
+                exit 42
+            fi
+        done
+    done
+    : > src/.vanadium-subprojects
+fi
+
 # ------------------------------------------------------------------ configure
 if [ ! -f "$out/build.ninja" ]; then
     log "gn gen ($ARCH, minSdk 29)"
