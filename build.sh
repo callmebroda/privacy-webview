@@ -145,8 +145,10 @@ if [ "$ALREADY_PREPARED" != y ]; then
         [ -d "$src_dir" ] || continue
         [ -d "src/$d" ] || { echo "WARN: src/$d missing, skipping its patches" >&2; continue; }
         log "applying subproject patches for $d"
-        for p in "$src_dir"/*.patch; do
-            [ -e "$p" ] || continue
+        # search_engines_data keeps its patches one level deeper (resources/), so glob
+        # recursively instead of assuming they sit directly in the directory.
+        while IFS= read -r p; do
+            [ -n "$p" ] || continue
             if git -C "src/$d" -c user.name=build -c user.email=build@localhost am -q --whitespace=nowarn --keep-non-patch "$p"; then
                 :
             else
@@ -154,7 +156,7 @@ if [ "$ALREADY_PREPARED" != y ]; then
                 echo "FATAL: subproject patch $(basename "$p") did not apply to src/$d" >&2
                 exit 42
             fi
-        done
+        done < <(find "$src_dir" -name '*.patch' | sort)
     done
     : > src/.vanadium-subprojects
 fi
