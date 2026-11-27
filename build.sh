@@ -28,7 +28,7 @@ done
 
 VANADIUM_VERSION=${VANADIUM_VERSION:-158.0.8127.92}
 CHROMIUM_TAG=${CHROMIUM_TAG:-$VANADIUM_VERSION}
-SKIP_PATCHES=${SKIP_PATCHES:-"0022 0024"}
+SKIP_PATCHES=${SKIP_PATCHES:-"0024"}
 here=$(pwd)
 out=src/out/Default
 
@@ -47,17 +47,28 @@ fi
 export PATH="$here/depot_tools:$PATH" DEPOT_TOOLS_UPDATE=0
 
 # ------------------------------------------------------------------ source
-if [ ! -d src/.git ]; then
-    log "fetching Chromium $CHROMIUM_TAG"
-    mkdir -p src
-    git init -q src
-    git -C src remote add origin https://chromium.googlesource.com/chromium/src.git
-    git -C src fetch -q --depth 1 origin "refs/tags/$CHROMIUM_TAG:refs/tags/$CHROMIUM_TAG"
+# The harness packs src/ WITHOUT src/.git between jobs, so a resumed job has a
+# patched tree but no git metadata. Use the markers to tell the two cases apart.
+ALREADY_PREPARED=n
+if [ -f src/.vanadium-patched ]; then ALREADY_PREPARED=y; fi
+
+if [ "$ALREADY_PREPARED" = y ]; then
+    log "resuming with an already fetched/patched tree (no .git expected)"
+else
+    if [ ! -d src/.git ]; then
+        log "fetching Chromium $CHROMIUM_TAG"
+        mkdir -p src
+        git init -q src
+        git -C src remote add origin https://chromium.googlesource.com/chromium/src.git
+        git -C src fetch -q --depth 1 origin "refs/tags/$CHROMIUM_TAG:refs/tags/$CHROMIUM_TAG"
+    fi
+    git -C src -c advice.detachedHead=false checkout -q --force "refs/tags/$CHROMIUM_TAG"
+    git -C src config user.name "vanadium-backport build"
+    git -C src config user.email "build@localhost"
 fi
-git -C src -c advice.detachedHead=false checkout -q --force "refs/tags/$CHROMIUM_TAG"
 
 # ------------------------------------------------------------------ deps
-if [ ! -f src/.gclient-synced ] || [ "$RESUME" != y ]; then
+if [ "$ALREADY_PREPARED" != y ] && [ ! -f src/.gclient-synced ]; then
     log "gclient sync + runhooks (this is the long part)"
     cat > .gclient <<EOF
 solutions = [{
@@ -80,7 +91,7 @@ if [ "$INSTALL_DEPS" = y ]; then
 fi
 
 # ------------------------------------------------------------------ patches
-if [ ! -f src/.vanadium-patched ] || [ "$RESUME" != y ]; then
+if [ "$ALREADY_PREPARED" != y ]; then
     log "applying Vanadium $VANADIUM_VERSION patches (minSdk 29; skipping: ${SKIP_PATCHES:-none})"
     applied=0
     for p in "$here"/vanadium/patches/*.patch; do
