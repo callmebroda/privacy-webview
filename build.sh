@@ -47,7 +47,28 @@ if [ ! -d depot_tools ]; then
     log "cloning depot_tools"
     git clone -q --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
 fi
-export PATH="$here/depot_tools:$PATH" DEPOT_TOOLS_UPDATE=0
+export PATH="$here/depot_tools:$PATH"
+# depot_tools ships without its bundled python until it is bootstrapped, and
+# DEPOT_TOOLS_UPDATE=0 suppresses that bootstrap - which is why "gn gen" died with
+# "python3_bin_reldir.txt not found". Bootstrap explicitly and verify before going on.
+unset DEPOT_TOOLS_UPDATE || true
+if [ ! -f depot_tools/python3_bin_reldir.txt ]; then
+    log "bootstrapping depot_tools (ensure_bootstrap)"
+    ( cd depot_tools && ./ensure_bootstrap ) || true
+fi
+if [ ! -f depot_tools/python3_bin_reldir.txt ]; then
+    log "ensure_bootstrap did not take; trying update_depot_tools"
+    ( cd depot_tools && ./update_depot_tools ) || true
+fi
+if [ ! -f depot_tools/python3_bin_reldir.txt ]; then
+    echo "FATAL: depot_tools bootstrap did not produce python3_bin_reldir.txt" >&2
+    echo "       (tried ensure_bootstrap and update_depot_tools)" >&2
+    exit 1
+fi
+for tool in gclient gn autoninja; do
+    command -v "$tool" >/dev/null 2>&1 || { echo "FATAL: $tool not on PATH after bootstrap" >&2; exit 1; }
+done
+export DEPOT_TOOLS_UPDATE=0
 
 # ------------------------------------------------------------------ source
 # The harness packs src/ WITHOUT src/.git between jobs, so a resumed job has a
