@@ -28,7 +28,10 @@ done
 
 VANADIUM_VERSION=${VANADIUM_VERSION:-158.0.8127.92}
 CHROMIUM_TAG=${CHROMIUM_TAG:-$VANADIUM_VERSION}
-SKIP_PATCHES=${SKIP_PATCHES:-"0024"}
+# All patches are applied. 0025 (the webview target) needs context lines that 0024
+# adds to vanadium/BUILD.gn, so nothing can be skipped without breaking the series.
+# The browser target and config APK exist as GN targets but are never built.
+SKIP_PATCHES=${SKIP_PATCHES:-""}
 here=$(pwd)
 out=src/out/Default
 
