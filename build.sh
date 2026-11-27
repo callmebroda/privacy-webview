@@ -105,7 +105,10 @@ fi
 # ------------------------------------------------------------------ deps
 if [ "$ALREADY_PREPARED" != y ] && [ ! -f src/.gclient-synced ]; then
     log "gclient sync + runhooks (this is the long part)"
-    cp "$here/.gclient" .gclient
+    # .gclient is already at the workspace root (it is checked into this repo), so there
+    # is nothing to copy - and "cp file file" fails under set -e when both paths are the
+    # same inode, which is exactly what killed the previous run.
+    [ -f .gclient ] || cp "$here/.gclient" .gclient
     # No --revision / -D / --force: Vanadium's .gclient marks the src solution
     # "managed: False", so gclient leaves our checked-out tag alone and only syncs the
     # DEPS children. -D would delete unversioned trees such as src/vanadium/.
