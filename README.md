@@ -1,346 +1,57 @@
-# ungoogled-chromium-android
+# Vanadium WebView — Android 10+ backport (personal, unsupported)
 
-> [!WARNING]
-> ### Experimental private build — not an official release
+> [!CAUTION]
+> **Personal experiment. Not an official build. No support.**
 >
-> This repository is a **personal, unsupported experiment**, forked from
-> [ungoogled-software/ungoogled-chromium-android](https://github.com/ungoogled-software/ungoogled-chromium-android).
-> It is **not** an official ungoogled-chromium release and is not endorsed by that project.
->
-> * It builds **only the Android System WebView** (`system_webview_apk`). No
->   `ChromePublic_*` browser assets are produced here.
-> * It targets **Chromium 158.0.8127.88**, bumped from upstream's 156.0.8078.79, so the
->   patch series has **not been validated against this milestone**. Builds may fail with
->   patch conflicts, and any APK produced may be broken or unstable.
-> * No release keystore is configured, so output is **debug-signed** unless you add
->   `KEYSTORE_B64` / `KEYSTORE_PASS` secrets. Debug-signed APKs must not be published.
-> * Android only accepts this as a WebView provider if the package
->   `org.ungoogled.chromium.webview` and its certificate are whitelisted in
->   `config_webview_packages.xml` — that means root plus a Magisk/KernelSU overlay.
-> * **No support, no warranty, no issue triage.** Do not report problems with this fork
->   to the upstream project.
->
-> Read [EXPERIMENTAL.md](EXPERIMENTAL.md) before building or installing anything from here.
+> - This is **not** an official GrapheneOS or Vanadium build, and it is not affiliated
+>   with, endorsed by, or supported by the GrapheneOS project.
+> - It rebuilds GrapheneOS's **Vanadium 158.0.8127.92** patch set on stock Chromium with
+>   `min_sdk_version` lowered from 34 to **29**, so it installs on Android 10+. GrapheneOS
+>   does not support that configuration — expect rough edges, and do not report them
+>   upstream.
+> - **ThinLTO, CFI and siso are disabled** so the build fits a 4-core / 16 GB CI runner.
+>   That is a deliberate loss of security hardening versus real Vanadium.
+> - **No support, no warranty, no issue triage.** Issues are disabled on purpose. If you
+>   want a maintained, supported build, use GrapheneOS or upstream Vanadium.
+> - The build scripts here were written with AI assistance and validated only by CI runs.
+>   They have not been audited by a human. Treat the output accordingly.
 
-## About this fork (`callmebroda/privacy-webview`)
+## What this is
 
-This fork exists for one narrow purpose: a **privacy-focused Android System WebView at a
-Chromium version newer than upstream ships**, for private use on an Android 11 (API 30)
-device.
+A personal, reproducible way to stay current with Vanadium's WebView hardening on a device
+that is **not** running GrapheneOS. Instead of maintaining a hand-ported patch set, it takes
+Vanadium's own sources and rebuilds them at a lower minimum SDK:
 
-* **What it produces:** `SystemWebView_<arch>.apk` only — the browser target is not built.
-* **Version:** Chromium **158.0.8127.88**, bumped from upstream's 156.0.8078.79.
-* **What is inside:** the ungoogled-chromium core patches, **32 Vanadium patches**
-  (field trials and variations disabled, WebView variations support off, metrics off by
-  default, strict site isolation, Play-services fonts off, autofill server communication
-  off, background sync off, sensors access off, stack protection), Bromite/Cromite
-  hardening (DoH secure mode by default, DRM origin-ID preprovisioning off, updater pings
-  off, account permissions removed) and the Unobtainium kills (Location fallback, Vision,
-  Translate). The authoritative list is `patches/series`.
-* **Status:** experimental. The patch series was last validated at 156, so the first build
-  run is expected to fail on patch conflicts in the `prep` job. An APK from here is
-  untested until you test it.
-* **Signing:** no release keystore is configured, so output is **debug-signed** unless you
-  add `KEYSTORE_B64` / `KEYSTORE_PASS` secrets. Debug-signed APKs must not be distributed.
-* **Installing it needs root:** the package is `org.ungoogled.chromium.webview`, which
-  Android only accepts as a WebView provider if the package and its certificate digest are
-  whitelisted in `config_webview_packages.xml` (a Magisk/KernelSU overlay), then selected
-  under *Developer options → WebView implementation*. Keep a rollback path — a broken
-  provider takes every WebView-backed app down with it.
+| Piece | Source |
+|---|---|
+| Chromium | `chromium.googlesource.com/chromium/src.git` @ `158.0.8127.92` |
+| Main patches | GrapheneOS/Vanadium `patches/` (304) |
+| Subproject patches | `subprojects_patches/` — v8 (4) + search engines (3), applied by Vanadium's own gclient hook |
+| Build args | Vanadium's `args.gn` + minSdk 29 + ThinLTO/CFI/siso off |
+| Target | `vanadium_webview_apk` → `VanadiumWebView64.apk` |
 
-### Building it here
+Bumping to a new Vanadium release is: copy `patches/`, re-apply one `sed`, rebuild. No
+patch porting.
 
-Actions → **release build** → *Run workflow*: `architecture` = `arm64` (or `arm`),
-`chromium_source` = `github`, `release_name` = **blank** (the publish job refuses
-unsigned APKs), `source_run_id` = blank, `threads` = `0`. The APK lands as the
-`release-<arch>` artifact.
+## Build
 
-**Not supported, not official.** No warranty, no issue triage, and please do not report
-problems with this fork to the upstream project — the upstream README, credits and
-licence below apply unchanged.
+```
+./build-vanadium.sh            # or ./build.sh --arch arm64 --target webview_target
+```
 
-Please see [CHANGELOG](CHANGELOG.md) for latest updates.
+See [VANADIUM-BACKPORT.md](VANADIUM-BACKPORT.md) for the full recipe, the expected
+breakages, the bump procedure, and what is deliberately not built (the config APK / RRO).
 
-*A lightweight approach to removing Google web service dependency*
+## Installing
 
-*Note: this is an **Android** build.*
+The APK is **unsigned for release** — sign it with your own key before installing. It is a
+standalone WebView (`app.vanadium.webview`, no Trichrome). You need root plus a WebView
+provider overlay to select it, and you must uninstall any previous install signed with a
+different key first.
 
-**Help is welcome!**
+## If this does not work
 
-For more information on `ungoogled-chromium`, please visit the original repo: [ungoogled-software/ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium).
-
-## Content Overview
-
-* [Objectives](#objectives)
-* [Differences from ungoogled-chromium](#differences-from-ungoogled-chromium)
-* [Limitations](#limitations)
-* [Platforms and Versions](#platforms-and-versions)
-* [F-Droid](#f-droid)
-* [Building Instructions](#building-instructions)
-* [Reporting and Contributing](#reporting-and-contributing)
-* [Extensions](#extensions)
-* [Credits](#credits)
-* [Related Projects](#related-projects)
-* [License](#license)
-
-## Objectives
-
-In descending order of significance (i.e. most important objective first):
-
-1. **ungoogled-chromium is Google Chromium, sans dependency on Google web services**.
-2. **ungoogled-chromium retains the default Chromium experience as closely as possible**. Unlike other Chromium forks that have their own visions of a web browser, ungoogled-chromium is essentially a drop-in replacement for Chromium.
-3. **ungoogled-chromium features tweaks to enhance privacy, control, and transparency**. However, almost all of these features must be manually activated or enabled. For more details, see [Feature Overview](https://github.com/ungoogled-software/ungoogled-chromium#feature-overview).
-
-## Differences from ungoogled-chromium
-
-*These are the differences between a Linux build of ungoogled-chromium and ungoogled-chromium-android.*
-
-* Disable/Remove Android specific functionalities:
-   * Contextual search
-   * Home page, off by default
-   * Location, falling back to the system provider
-   * New Tab Page suggested sites
-   * Offline indicator
-   * Safe Browsing, compiled out along with its lookups
-   * Terms-of-Service prompt and metrics opt-out
-   * Unnecessary account permissions
-* Android specific enhancements:
-   * Add flag to always send `save-data` in header
-   * Add flag to clear browsing data on exit
-   * Add flag to disable WebRTC. This flag is enabled by default.
-   * Rename the package to `org.ungoogled.chromium`, so it can be installed alongside Chrome
-* Borrowed from Bromite:
-   * Always incognito mode
-   * Disable DRM media preprovisioning which leaks connections
-   * Disable updater pings
-   * DNS-over-https where the network supports it
-   * Restore the flag to disable the pull-to-refresh effect
-   * WebGL flag
-* Borrowed from Cromite:
-   * Bookmark import/export options
-   * Clear open tabs between sessions
-   * Exit menu item
-   * Force tablet UI
-   * Proxy configuration
-* Borrowed from Vanadium:
-   * Ask before playing protected media
-   * Disable article suggestions, background sync and sensor access
-   * Disable autofill server communication
-   * Disable media router and media remoting
-   * Disable metrics
-   * Disable seed-based field trials, variations fetching and WebView variations
-   * Disable showing popular sites
-   * Disable the first run welcome page
-   * Disable using Play services fonts
-   * Enable split cache and strict site isolation
-   * Various compiling time enhancements
-* All Google play and Google service related blobs are removed. This includes Firebase, GCM (Google Cloud Messaging), GMS (Google Mobile Services) and bridge to Google Play.
-* Releases are built for `arm` and `arm64`, plus an `.aab` for `arm64`. There is no `x86` or `x64` build.
-
-## Limitations
-
-The enhancements included in ungoogled-chromium **are not to be considered useful for journalists, people living in countries with freedom limitations, and those who are facing government-level adversaries**. Please look at tools specifically developed for these purposes, for example [Tor Browser](https://www.torproject.org/download/) in such cases.
-
-## Platforms and Versions
-
-Pre-built apks are named as `{BUILD_TARGET}_{CPU_ARCH}.apk`, where:
-* `{BUILD_TARGET}` is `ChromePublic` (previously `ChromeModernPublic` from previous maintainer wchen342), for API >= 29 (Android 10), browser only.
-* `{CPU_ARCH}` is one of `arm` (armeabi-v7a), `arm64` (arm64-v8a).
-* Previous maintainer also built `Trichrome`, `SystemWebView`, `x86` for releases. My builds are currently done local rather than automating through github; if there's enough people requesting further builds I can spend the time to set this up.
-* The [ungoogled-chromium wiki](https://ungoogled-software.github.io/ungoogled-chromium-wiki/), [Cromite documentation](https://github.com/uazo/cromite/tree/master/docs), [Vanadium](https://github.com/GrapheneOS/Vanadium) and the [Bromite wiki](https://github.com/bromite/bromite/wiki) can also be helpful.
-
-## F-Droid
-
-We trialed hosting a self-hosted [F-Droid](https://f-droid.org) repo from this
-repository, but unfortunately without success. The client needs the signed index
-**and** the ~367 MB APK served as a direct HTTP `200` (no redirect). There are
-the following hurdles:
-
-1. **Git branch + Git LFS** — the ~367 MB APK exceeds git's 100 MB per-file
-   limit, so it *requires* Git LFS; but this is a *fork*, and GitHub forks can't
-   store new LFS objects.
-2. **Release assets** — every download URL `302`-redirects to a CDN, and the
-   F-Droid client sets `followRedirects = false` (only a `404` is tolerated), so
-   the repo can't live in release assets.
-3. **Serving the APKs directly** — the only workable route, but it requires an
-   external service to operate; GitHub's direct file hosts
-   (`raw.githubusercontent.com`, Pages, jsDelivr) only serve git-tracked files
-   (~100 MB cap) and can't deliver the APK.
-
-Install the [release APKs](#platforms-and-versions) directly (sideload) instead.
-
-## Building Instructions
-*This build uses the SDK/NDK/JDK from the gclient checkout. [Android rebuilds](https://github.com/wchen342/android-rebuilds), used by earlier versions, is no longer maintained.*
-
-* Clone this repository
-* Make sure you have enough disk space and memory to build chromium
-* enter repo directory and run `./build.sh`.
-
-Build time dependencies:
-
-<details>
-  <summary>required packages</summary>
-
-  **Debian**
-
-  ```
-      bison
-      bzip2
-      clang
-      curl
-      default-jdk
-      file
-      flex
-      git
-      gnupg2
-      gperf
-      lib32gcc-s1
-      lib32stdc++6
-      libc6-dev-i386
-      libc6-i386
-      libdbus-1-dev
-      libdrm-dev
-      libexpat1-dev
-      libglib2.0-dev
-      libkrb5-dev
-      libnss3-dev
-      libxkbcommon-dev
-      lld
-      llvm
-      lsb-release
-      make
-      nodejs
-      npm
-      patch
-      perl
-      python3
-      rsync
-      tar
-      unzip
-      uuid-dev
-      wget
-      yasm
-  ```
-
-  **Fedora**
-
-  ```
-      bison
-      bzip2
-      clang
-      curl
-      dbus-devel
-      expat-devel
-      file
-      flex
-      git
-      glib2-devel
-      glibc-devel.i686
-      glibc.i686
-      gnupg2
-      gperf
-      java-latest-openjdk-devel
-      krb5-devel
-      libdrm-devel
-      libgcc.i686
-      libstdc++.i686
-      libuuid-devel
-      libxkbcommon-devel
-      lld
-      llvm
-      make
-      nodejs
-      npm
-      nss-devel
-      patch
-      perl
-      python3
-      redhat-lsb-core
-      rsync
-      tar
-      unzip
-      wget
-      yasm
-  ```
-
-  **Arch**
-
-  ```
-      bison
-      bzip2
-      clang
-      curl
-      dbus
-      expat
-      file
-      flex
-      git
-      glib2
-      gnupg
-      gperf
-      jdk-openjdk
-      krb5
-      lib32-gcc-libs
-      lib32-glibc
-      libdrm
-      libxkbcommon
-      lld
-      llvm
-      lsb-release
-      make
-      nodejs
-      npm
-      nss
-      patch
-      perl
-      python
-      rsync
-      tar
-      unzip
-      util-linux
-      wget
-      yasm
-  ```
-
-  The `lib32-*` packages require the `multilib` repository, which is disabled by default —
-  uncomment the `[multilib]` section in `/etc/pacman.conf` and run `pacman -Sy` first.
-</details>
-
-*Builds are untested on other distros besides Debian.*
-
-For a more customized building process, see building instructions from [the original repo](https://github.com/ungoogled-software/ungoogled-chromium/blob/master/docs/building.md) or [Cromite](https://github.com/uazo/cromite/blob/master/docs/HOW_TO_BUILD.md).
-
-## Reporting and Contributing
-
-* For reporting issues and contacting, see [SUPPORT](SUPPORT.md)
-* Bug reports and code contributions are welcomed.
-
-## Extensions
-
-*The extension support version has been discontinued.* The last version is `88.0.4324.182`. It will still be available for downloading, but no new version will be released.
-
-The extension patches can be found at [chromium-android-extension](https://github.com/wchen342/chromium-android-extension). Anyone interested is welcomed to fork and keeps working on it.
-
-*Re-supporting extensions is being worked on, since many Android browsers now carry extension support.*
-
-## Credits
-
-* [The Chromium Project](https://www.chromium.org/)
-* [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium)
-* [xsmile's fork](https://github.com/xsmile/ungoogled-chromium/tree/android)
-* [Bromite](https://github.com/bromite/bromite)
-* [Cromite](https://github.com/uazo/cromite)
-* [Vanadium](https://github.com/GrapheneOS/Vanadium)
-* [Unobtainium](https://gitlab.com/thermatk/Unobtainium)
-* [Kiwi Browser](https://github.com/kiwibrowser)
-* [dvalter's patches](https://github.com/dvalter/chromium-android-ext-dev)
-
-## Related Projects
-
-* [Cromite](https://github.com/uazo/cromite) (Bromite successor)
-* [Vanadium](https://github.com/GrapheneOS/Vanadium) (Browser for GrapheneOS)
-* [Bromite](https://github.com/bromite/bromite) (Discontinued Android build)
-
-## License
-
-See [LICENSE](LICENSE.md).
+The other branch of this repo, `master` / `experimental-webview-158`, holds a different
+recipe: official Chromium + ungoogled-chromium's patch set + Vanadium hardening + Bromite/
+Cromite patches, hand-ported. It is more aggressive about removing Google integrations and
+it already produced a working `minSdk 29` WebView — at the cost of manual maintenance.

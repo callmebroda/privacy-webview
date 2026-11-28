@@ -1,0 +1,11 @@
+# This fork has no support and no issue triage. Blank issues are disabled and no
+# templates are offered, so the tracker stays closed for business. If you need a
+# supported build, use GrapheneOS or upstream Vanadium.
+blank_issues_enabled: false
+contact_links:
+  - name: GrapheneOS / Vanadium (upstream, supported)
+    url: https://github.com/GrapheneOS/Vanadium
+    about: Real Vanadium bugs belong here, not in this fork.
+  - name: ungoogled-chromium-android (the recipe master is based on)
+    url: https://github.com/ungoogled-software/ungoogled-chromium-android
+    about: Upstream project this repository's master branch derives from.
