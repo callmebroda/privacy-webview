@@ -1,0 +1,9 @@
+# No support, no triage. Blank issues are disabled and no templates are offered.
+blank_issues_enabled: false
+contact_links:
+  - name: ungoogled-chromium-android (upstream)
+    url: https://github.com/ungoogled-software/ungoogled-chromium-android
+    about: Real bugs in the base recipe belong upstream, not in this fork.
+  - name: GrapheneOS / Vanadium (upstream)
+    url: https://github.com/GrapheneOS/Vanadium
+    about: Source of the hardening patches used here.

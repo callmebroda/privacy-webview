@@ -1,5 +1,15 @@
 # ungoogled-chromium-android
 
+> [!CAUTION]
+> **Personal experiment. Not an official build. No support.**
+>
+> - Not affiliated with, endorsed by, or supported by the ungoogled-chromium project or
+>   GrapheneOS. Do not report problems here upstream.
+> - **No support, no warranty, no issue triage.** Issues are disabled on purpose.
+> - The build scripts were written with AI assistance and validated only by CI runs; they
+>   have not been audited by a human. Treat any APK produced here accordingly.
+> - Any APK built here is for personal use. Sign it with your own key; do not redistribute.
+
 > [!WARNING]
 > ### Experimental private build — not an official release
 >
