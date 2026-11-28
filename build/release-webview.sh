@@ -17,10 +17,11 @@ VERSION=$(grep -o 'android_override_version_name="[^"]*"' "$OUT/args.gn" 2>/dev/
 REL="releases/${VERSION}-${ungoogled_chromium_android_revision}"
 mkdir -p "$REL"
 
-WV_IN=$(find "$OUT/apks" -maxdepth 1 -name "VanadiumWebView.apk" | head -1)
-[ -n "$WV_IN" ] || WV_IN=$(find "$OUT/apks" -maxdepth 1 -name "SystemWebView64.apk" | head -1)
-[ -n "$WV_IN" ] || WV_IN=$(find "$OUT/apks" -maxdepth 1 -name "SystemWebView.apk" | head -1)
-[ -n "$WV_IN" ] || { echo "FATAL: no SystemWebView.apk under $OUT/apks (webview target not built?)"; exit 1; }
+# The vanadium_webview_apk target emits VanadiumWebView64.apk (64-bit variant of
+# vanadium_webview_64_apk); the ungoogled recipe emits SystemWebView*.apk.
+WV_IN=$(find "$OUT/apks" -maxdepth 1 -name "VanadiumWebView*.apk" | head -1)
+[ -n "$WV_IN" ] || WV_IN=$(find "$OUT/apks" -maxdepth 1 -name "SystemWebView*.apk" | head -1)
+[ -n "$WV_IN" ] || { echo "FATAL: no VanadiumWebView*/SystemWebView* APK under $OUT/apks (webview target not built?)"; exit 1; }
 
 KS="${UGC_KEYSTORE:-}"
 KS_ALIAS="${UGC_KEYSTORE_ALIAS:-key0}"
